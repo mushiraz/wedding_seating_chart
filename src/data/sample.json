@@ -1,0 +1,40 @@
+{
+  "event": {
+    "slug": "john-sarah-wedding",
+    "title": "John & Sarah Wedding",
+    "date": "March 15, 2026"
+  },
+  "tables": [
+    { "id": "t1", "label": "Table 1", "shape": "round", "seats": 8, "x": 20, "y": 25 },
+    { "id": "t2", "label": "Table 2", "shape": "round", "seats": 8, "x": 50, "y": 25 },
+    { "id": "t3", "label": "Table 3", "shape": "round", "seats": 8, "x": 80, "y": 25 },
+    { "id": "t4", "label": "Table 4", "shape": "round", "seats": 6, "x": 20, "y": 55 },
+    { "id": "t5", "label": "Table 5", "shape": "rectangle", "seats": 10, "x": 50, "y": 55, "width": 18, "height": 8 },
+    { "id": "t6", "label": "Table 6", "shape": "round", "seats": 6, "x": 80, "y": 55 },
+    { "id": "t7", "label": "Table 7", "shape": "round", "seats": 8, "x": 35, "y": 82 },
+    { "id": "t8", "label": "Table 8", "shape": "round", "seats": 8, "x": 65, "y": 82 }
+  ],
+  "guests": [
+    { "id": "g1",  "name": "Calvin Fernandez", "tableId": "t1" },
+    { "id": "g2",  "name": "Mariele Monte",    "tableId": "t1" },
+    { "id": "g3",  "name": "Sarah Thompson",   "tableId": "t1" },
+    { "id": "g4",  "name": "Shauna Nunes",     "tableId": "t2" },
+    { "id": "g5",  "name": "Tamar Donville",   "tableId": "t2" },
+    { "id": "g6",  "name": "Trish Medeiros",   "tableId": "t2" },
+    { "id": "g7",  "name": "Beth Richards",    "tableId": "t3" },
+    { "id": "g8",  "name": "Mark Bettencourt", "tableId": "t3" },
+    { "id": "g9",  "name": "Tom Richard",      "tableId": "t3" },
+    { "id": "g10", "name": "Chris Prougle",    "tableId": "t4" },
+    { "id": "g11", "name": "Claudio Polito",   "tableId": "t4" },
+    { "id": "g12", "name": "Darren Todd",      "tableId": "t4" },
+    { "id": "g13", "name": "Helen Rebaldo",    "tableId": "t5" },
+    { "id": "g14", "name": "Helen Rebaldo Guest", "tableId": "t5" },
+    { "id": "g15", "name": "Jason Russell",    "tableId": "t5" },
+    { "id": "g16", "name": "Maria Santos",     "tableId": "t6" },
+    { "id": "g17", "name": "David Chen",       "tableId": "t6" },
+    { "id": "g18", "name": "Emma Watson",      "tableId": "t7" },
+    { "id": "g19", "name": "James Miller",     "tableId": "t7" },
+    { "id": "g20", "name": "Sophie Turner",    "tableId": "t8" },
+    { "id": "g21", "name": "Robert Garcia",    "tableId": "t8" }
+  ]
+}
