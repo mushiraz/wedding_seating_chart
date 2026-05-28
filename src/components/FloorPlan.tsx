@@ -1,15 +1,25 @@
 "use client";
 
 import { useRef, useEffect, useState, useCallback } from "react";
-import { Table, Guest } from "@/lib/types";
+import { Table, Guest, Fixture, FixtureType } from "@/lib/types";
 
 interface FloorPlanProps {
   tables: Table[];
   guests: Guest[];
+  fixtures?: Fixture[];
   highlightedTableId?: string | null;
   onTableClick?: (tableId: string) => void;
   backgroundImage?: string;
 }
+
+const FIXTURE_COLORS: Record<FixtureType, { fill: string; stroke: string; textColor: string }> = {
+  door:       { fill: "#a88c6d", stroke: "#7a6344", textColor: "#ffffff" },
+  stage:      { fill: "#8b7ec8", stroke: "#6558a8", textColor: "#ffffff" },
+  walkway:    { fill: "#c9c2b5", stroke: "#a89e90", textColor: "#5a5550" },
+  dancefloor: { fill: "#d4a0a0", stroke: "#b87878", textColor: "#ffffff" },
+  bar:        { fill: "#5a8fa8", stroke: "#3d6e84", textColor: "#ffffff" },
+  dj:         { fill: "#a85a8f", stroke: "#843d6e", textColor: "#ffffff" },
+};
 
 function getChairPositions(
   shape: "round" | "rectangle",
@@ -53,9 +63,86 @@ function getChairPositions(
   return positions;
 }
 
+function drawFixtureOnCanvas(
+  ctx: CanvasRenderingContext2D,
+  fixture: Fixture,
+  canvasW: number,
+  canvasH: number
+) {
+  const cx = (fixture.x / 100) * canvasW;
+  const cy = (fixture.y / 100) * canvasH;
+  const w = (fixture.width / 100) * canvasW;
+  const h = (fixture.height / 100) * canvasH;
+  const colors = FIXTURE_COLORS[fixture.type];
+
+  ctx.save();
+  if (fixture.rotation) {
+    ctx.translate(cx, cy);
+    ctx.rotate((fixture.rotation * Math.PI) / 180);
+    ctx.translate(-cx, -cy);
+  }
+
+  if (fixture.type === "dancefloor") {
+    const tileSize = Math.min(w, h) / 4;
+    for (let r = 0; r < Math.ceil(h / tileSize); r++) {
+      for (let c = 0; c < Math.ceil(w / tileSize); c++) {
+        const tx = cx - w / 2 + c * tileSize;
+        const ty = cy - h / 2 + r * tileSize;
+        const tw = Math.min(tileSize, cx + w / 2 - tx);
+        const th = Math.min(tileSize, cy + h / 2 - ty);
+        ctx.fillStyle = (r + c) % 2 === 0 ? colors.fill : "#e8bfbf";
+        ctx.fillRect(tx, ty, tw, th);
+      }
+    }
+    ctx.strokeStyle = colors.stroke;
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(cx - w / 2, cy - h / 2, w, h);
+  } else if (fixture.type === "walkway") {
+    ctx.fillStyle = colors.fill;
+    ctx.fillRect(cx - w / 2, cy - h / 2, w, h);
+    ctx.setLineDash([6, 4]);
+    ctx.strokeStyle = "#a89e90";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(cx - w / 2 + 4, cy);
+    ctx.lineTo(cx + w / 2 - 4, cy);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.strokeStyle = colors.stroke;
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(cx - w / 2, cy - h / 2, w, h);
+  } else if (fixture.type === "door") {
+    ctx.fillStyle = colors.fill;
+    ctx.fillRect(cx - w / 2, cy - h / 2, w, h);
+    ctx.strokeStyle = colors.stroke;
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(cx - w / 2, cy - h / 2, w, h);
+    ctx.beginPath();
+    ctx.arc(cx - w / 2, cy + h / 2, w * 0.6, -Math.PI / 2, 0);
+    ctx.strokeStyle = "rgba(122, 99, 68, 0.4)";
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  } else {
+    ctx.fillStyle = colors.fill;
+    ctx.fillRect(cx - w / 2, cy - h / 2, w, h);
+    ctx.strokeStyle = colors.stroke;
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(cx - w / 2, cy - h / 2, w, h);
+  }
+
+  ctx.restore();
+
+  ctx.fillStyle = colors.textColor;
+  ctx.font = `bold ${Math.max(9, canvasW * 0.012)}px Inter, sans-serif`;
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText(fixture.label, cx, cy);
+}
+
 export default function FloorPlan({
   tables,
   guests,
+  fixtures = [],
   highlightedTableId,
   onTableClick,
   backgroundImage,
@@ -119,6 +206,11 @@ export default function FloorPlan({
     ctx.strokeStyle = "#e0dbd3";
     ctx.lineWidth = 1;
     ctx.strokeRect(10, 10, dimensions.width - 20, dimensions.height - 20);
+
+    // Draw fixtures behind tables
+    for (const fixture of fixtures) {
+      drawFixtureOnCanvas(ctx, fixture, dimensions.width, dimensions.height);
+    }
 
     const gMap = guestsByTable();
     pulseRef.current += 0.05;
@@ -208,7 +300,7 @@ export default function FloorPlan({
         }
       }
     }
-  }, [dimensions, tables, guests, highlightedTableId, hoveredTable, bgImage, guestsByTable]);
+  }, [dimensions, tables, guests, fixtures, highlightedTableId, hoveredTable, bgImage, guestsByTable]);
 
   useEffect(() => {
     let running = true;

@@ -49,6 +49,7 @@ export default function PreviewStep({ data, onBack, onPublish }: PreviewStepProp
           <FloorPlan
             tables={data.tables}
             guests={data.guests}
+            fixtures={data.fixtures}
             backgroundImage={data.event.floorPlanBg}
           />
         </div>

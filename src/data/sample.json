@@ -36,5 +36,11 @@
     { "id": "g19", "name": "James Miller",     "tableId": "t7" },
     { "id": "g20", "name": "Sophie Turner",    "tableId": "t8" },
     { "id": "g21", "name": "Robert Garcia",    "tableId": "t8" }
+  ],
+  "fixtures": [
+    { "id": "fix-stage", "type": "stage", "label": "Stage", "x": 50, "y": 8, "width": 30, "height": 8 },
+    { "id": "fix-door1", "type": "door", "label": "Door", "x": 5, "y": 50, "width": 5, "height": 3 },
+    { "id": "fix-dance", "type": "dancefloor", "label": "Dance Floor", "x": 50, "y": 95, "width": 22, "height": 8 },
+    { "id": "fix-bar", "type": "bar", "label": "Bar", "x": 93, "y": 50, "width": 5, "height": 18 }
   ]
 }

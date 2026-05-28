@@ -24,9 +24,11 @@ export default function EventPage() {
 
   useEffect(() => {
     let loaded = loadEvent(slug);
-    if (!loaded && slug === "john-sarah-wedding") {
-      loaded = sampleData as EventData;
-      saveEvent(loaded);
+    if (slug === "john-sarah-wedding") {
+      if (!loaded || !loaded.fixtures) {
+        loaded = sampleData as EventData;
+        saveEvent(loaded);
+      }
     }
     if (loaded) {
       setData(loaded);
@@ -107,6 +109,7 @@ export default function EventPage() {
             <FloorPlan
               tables={data.tables}
               guests={data.guests}
+              fixtures={data.fixtures}
               highlightedTableId={highlightedTableId}
               onTableClick={(tableId) => {
                 setHighlightedTableId(tableId);

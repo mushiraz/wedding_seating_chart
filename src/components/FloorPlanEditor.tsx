@@ -1,21 +1,47 @@
 "use client";
 
 import { useRef, useEffect, useState, useCallback } from "react";
-import { Table } from "@/lib/types";
+import { Table, Fixture, FixtureType, FIXTURE_PRESETS } from "@/lib/types";
 
 interface FloorPlanEditorProps {
   tables: Table[];
-  onChange: (tables: Table[]) => void;
+  onTablesChange: (tables: Table[]) => void;
+  fixtures: Fixture[];
+  onFixturesChange: (fixtures: Fixture[]) => void;
   backgroundImage?: string;
 }
 
-export default function FloorPlanEditor({ tables, onChange, backgroundImage }: FloorPlanEditorProps) {
+type DragTarget =
+  | { kind: "table"; index: number; offsetX: number; offsetY: number }
+  | { kind: "fixture"; index: number; offsetX: number; offsetY: number };
+
+type Selection =
+  | { kind: "table"; index: number }
+  | { kind: "fixture"; index: number }
+  | null;
+
+const FIXTURE_COLORS: Record<FixtureType, { fill: string; stroke: string; textColor: string }> = {
+  door:       { fill: "#a88c6d", stroke: "#7a6344", textColor: "#ffffff" },
+  stage:      { fill: "#8b7ec8", stroke: "#6558a8", textColor: "#ffffff" },
+  walkway:    { fill: "#c9c2b5", stroke: "#a89e90", textColor: "#5a5550" },
+  dancefloor: { fill: "#d4a0a0", stroke: "#b87878", textColor: "#ffffff" },
+  bar:        { fill: "#5a8fa8", stroke: "#3d6e84", textColor: "#ffffff" },
+  dj:         { fill: "#a85a8f", stroke: "#843d6e", textColor: "#ffffff" },
+};
+
+export default function FloorPlanEditor({
+  tables,
+  onTablesChange,
+  fixtures,
+  onFixturesChange,
+  backgroundImage,
+}: FloorPlanEditorProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [dimensions, setDimensions] = useState({ width: 800, height: 500 });
   const [bgImg, setBgImg] = useState<HTMLImageElement | null>(null);
-  const [dragging, setDragging] = useState<{ tableIndex: number; offsetX: number; offsetY: number } | null>(null);
-  const [selectedTable, setSelectedTable] = useState<number | null>(null);
+  const [dragging, setDragging] = useState<DragTarget | null>(null);
+  const [selected, setSelected] = useState<Selection>(null);
 
   useEffect(() => {
     if (!backgroundImage) { setBgImg(null); return; }
@@ -41,7 +67,7 @@ export default function FloorPlanEditor({ tables, onChange, backgroundImage }: F
       const cx = (table.x / 100) * dimensions.width;
       const cy = (table.y / 100) * dimensions.height;
       if (table.shape === "round") {
-        const r = Math.min(dimensions.width, dimensions.height) * 0.055;
+        const r = Math.min(dimensions.width, dimensions.height) * 0.05;
         return { cx, cy, r, w: 0, h: 0, isRound: true };
       }
       const w = (table.width || 14) * (dimensions.width / 100);
@@ -49,6 +75,97 @@ export default function FloorPlanEditor({ tables, onChange, backgroundImage }: F
       return { cx, cy, r: 0, w, h, isRound: false };
     },
     [dimensions]
+  );
+
+  const getFixtureBounds = useCallback(
+    (fixture: Fixture) => {
+      const cx = (fixture.x / 100) * dimensions.width;
+      const cy = (fixture.y / 100) * dimensions.height;
+      const w = (fixture.width / 100) * dimensions.width;
+      const h = (fixture.height / 100) * dimensions.height;
+      return { cx, cy, w, h };
+    },
+    [dimensions]
+  );
+
+  const drawFixture = useCallback(
+    (ctx: CanvasRenderingContext2D, fixture: Fixture, isSelected: boolean) => {
+      const { cx, cy, w, h } = getFixtureBounds(fixture);
+      const colors = FIXTURE_COLORS[fixture.type];
+
+      if (isSelected) {
+        ctx.strokeStyle = "#5a7d5a";
+        ctx.lineWidth = 2;
+        ctx.setLineDash([4, 3]);
+        ctx.strokeRect(cx - w / 2 - 4, cy - h / 2 - 4, w + 8, h + 8);
+        ctx.setLineDash([]);
+      }
+
+      ctx.save();
+      if (fixture.rotation) {
+        ctx.translate(cx, cy);
+        ctx.rotate((fixture.rotation * Math.PI) / 180);
+        ctx.translate(-cx, -cy);
+      }
+
+      if (fixture.type === "dancefloor") {
+        const tileSize = Math.min(w, h) / 4;
+        for (let r = 0; r < Math.ceil(h / tileSize); r++) {
+          for (let c = 0; c < Math.ceil(w / tileSize); c++) {
+            const tx = cx - w / 2 + c * tileSize;
+            const ty = cy - h / 2 + r * tileSize;
+            const tw = Math.min(tileSize, cx + w / 2 - tx);
+            const th = Math.min(tileSize, cy + h / 2 - ty);
+            ctx.fillStyle = (r + c) % 2 === 0 ? colors.fill : "#e8bfbf";
+            ctx.fillRect(tx, ty, tw, th);
+          }
+        }
+        ctx.strokeStyle = colors.stroke;
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(cx - w / 2, cy - h / 2, w, h);
+      } else if (fixture.type === "walkway") {
+        ctx.fillStyle = colors.fill;
+        ctx.fillRect(cx - w / 2, cy - h / 2, w, h);
+        ctx.setLineDash([6, 4]);
+        ctx.strokeStyle = "#a89e90";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(cx - w / 2 + 4, cy);
+        ctx.lineTo(cx + w / 2 - 4, cy);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.strokeStyle = colors.stroke;
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(cx - w / 2, cy - h / 2, w, h);
+      } else if (fixture.type === "door") {
+        ctx.fillStyle = colors.fill;
+        ctx.fillRect(cx - w / 2, cy - h / 2, w, h);
+        ctx.strokeStyle = colors.stroke;
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(cx - w / 2, cy - h / 2, w, h);
+        // Door arc indicator
+        ctx.beginPath();
+        ctx.arc(cx - w / 2, cy + h / 2, w * 0.6, -Math.PI / 2, 0);
+        ctx.strokeStyle = "rgba(122, 99, 68, 0.4)";
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      } else {
+        ctx.fillStyle = colors.fill;
+        ctx.fillRect(cx - w / 2, cy - h / 2, w, h);
+        ctx.strokeStyle = colors.stroke;
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(cx - w / 2, cy - h / 2, w, h);
+      }
+
+      ctx.restore();
+
+      ctx.fillStyle = colors.textColor;
+      ctx.font = `bold ${Math.max(9, dimensions.width * 0.012)}px Inter, sans-serif`;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(fixture.label, cx, cy);
+    },
+    [dimensions, getFixtureBounds]
   );
 
   const draw = useCallback(() => {
@@ -93,9 +210,16 @@ export default function FloorPlanEditor({ tables, onChange, backgroundImage }: F
     ctx.lineWidth = 2;
     ctx.strokeRect(0, 0, dimensions.width, dimensions.height);
 
+    // Draw fixtures first (behind tables)
+    fixtures.forEach((fixture, i) => {
+      const isSel = selected?.kind === "fixture" && selected.index === i;
+      drawFixture(ctx, fixture, isSel);
+    });
+
+    // Draw tables
     tables.forEach((table, i) => {
       const bounds = getTableBounds(table);
-      const isSelected = selectedTable === i;
+      const isSelected = selected?.kind === "table" && selected.index === i;
 
       if (bounds.isRound) {
         if (isSelected) {
@@ -153,16 +277,17 @@ export default function FloorPlanEditor({ tables, onChange, backgroundImage }: F
       ctx.textBaseline = "middle";
       ctx.fillText(table.label, bounds.cx, bounds.cy);
     });
-  }, [dimensions, tables, bgImg, selectedTable, getTableBounds]);
+  }, [dimensions, tables, fixtures, bgImg, selected, getTableBounds, drawFixture]);
 
   useEffect(() => { draw(); }, [draw]);
 
   const hitTest = useCallback(
-    (x: number, y: number): number | null => {
+    (x: number, y: number): Selection => {
+      // Check tables first (they render on top)
       for (let i = tables.length - 1; i >= 0; i--) {
         const bounds = getTableBounds(tables[i]);
         if (bounds.isRound) {
-          if (Math.hypot(x - bounds.cx, y - bounds.cy) < bounds.r + 8) return i;
+          if (Math.hypot(x - bounds.cx, y - bounds.cy) < bounds.r + 8) return { kind: "table", index: i };
         } else {
           if (
             x >= bounds.cx - bounds.w / 2 - 8 &&
@@ -170,12 +295,23 @@ export default function FloorPlanEditor({ tables, onChange, backgroundImage }: F
             y >= bounds.cy - bounds.h / 2 - 8 &&
             y <= bounds.cy + bounds.h / 2 + 8
           )
-            return i;
+            return { kind: "table", index: i };
         }
+      }
+      // Then fixtures
+      for (let i = fixtures.length - 1; i >= 0; i--) {
+        const { cx, cy, w, h } = getFixtureBounds(fixtures[i]);
+        if (
+          x >= cx - w / 2 - 6 &&
+          x <= cx + w / 2 + 6 &&
+          y >= cy - h / 2 - 6 &&
+          y <= cy + h / 2 + 6
+        )
+          return { kind: "fixture", index: i };
       }
       return null;
     },
-    [tables, getTableBounds]
+    [tables, fixtures, getTableBounds, getFixtureBounds]
   );
 
   const getCanvasCoords = (e: React.MouseEvent | React.TouchEvent) => {
@@ -189,11 +325,16 @@ export default function FloorPlanEditor({ tables, onChange, backgroundImage }: F
 
   const handlePointerDown = (e: React.MouseEvent | React.TouchEvent) => {
     const { x, y } = getCanvasCoords(e);
-    const idx = hitTest(x, y);
-    setSelectedTable(idx);
-    if (idx !== null) {
-      const bounds = getTableBounds(tables[idx]);
-      setDragging({ tableIndex: idx, offsetX: x - bounds.cx, offsetY: y - bounds.cy });
+    const hit = hitTest(x, y);
+    setSelected(hit);
+    if (hit) {
+      if (hit.kind === "table") {
+        const bounds = getTableBounds(tables[hit.index]);
+        setDragging({ kind: "table", index: hit.index, offsetX: x - bounds.cx, offsetY: y - bounds.cy });
+      } else {
+        const { cx, cy } = getFixtureBounds(fixtures[hit.index]);
+        setDragging({ kind: "fixture", index: hit.index, offsetX: x - cx, offsetY: y - cy });
+      }
     }
   };
 
@@ -206,19 +347,79 @@ export default function FloorPlanEditor({ tables, onChange, backgroundImage }: F
     }
     e.preventDefault();
     const { x, y } = getCanvasCoords(e);
-    const newX = Math.max(0, Math.min(100, ((x - dragging.offsetX) / dimensions.width) * 100));
-    const newY = Math.max(0, Math.min(100, ((y - dragging.offsetY) / dimensions.height) * 100));
-    const next = [...tables];
-    next[dragging.tableIndex] = { ...next[dragging.tableIndex], x: newX, y: newY };
-    onChange(next);
+    const newX = Math.max(2, Math.min(98, ((x - dragging.offsetX) / dimensions.width) * 100));
+    const newY = Math.max(2, Math.min(98, ((y - dragging.offsetY) / dimensions.height) * 100));
+
+    if (dragging.kind === "table") {
+      const next = [...tables];
+      next[dragging.index] = { ...next[dragging.index], x: newX, y: newY };
+      onTablesChange(next);
+    } else {
+      const next = [...fixtures];
+      next[dragging.index] = { ...next[dragging.index], x: newX, y: newY };
+      onFixturesChange(next);
+    }
   };
 
   const handlePointerUp = () => {
     setDragging(null);
   };
 
+  const handleDeleteSelected = () => {
+    if (!selected) return;
+    if (selected.kind === "fixture") {
+      onFixturesChange(fixtures.filter((_, i) => i !== selected.index));
+    }
+    setSelected(null);
+  };
+
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if ((e.key === "Delete" || e.key === "Backspace") && selected?.kind === "fixture") {
+        e.preventDefault();
+        handleDeleteSelected();
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [selected, fixtures]
+  );
+
+  useEffect(() => {
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [handleKeyDown]);
+
   return (
-    <div ref={containerRef} className="w-full">
+    <div ref={containerRef} className="w-full space-y-3">
+      {/* Fixture toolbar */}
+      <div className="flex flex-wrap gap-2">
+        {(Object.keys(FIXTURE_PRESETS) as FixtureType[]).map((type) => {
+          const preset = FIXTURE_PRESETS[type];
+          return (
+            <button
+              key={type}
+              onClick={() => {
+                const newFixture: Fixture = {
+                  id: `fix-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+                  type,
+                  label: preset.label,
+                  x: 50,
+                  y: 50,
+                  width: preset.width,
+                  height: preset.height,
+                };
+                onFixturesChange([...fixtures, newFixture]);
+              }}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium border border-card-border
+                rounded-lg bg-card-bg hover:border-primary-light hover:bg-primary/5 transition-colors"
+            >
+              <span>{preset.icon}</span>
+              <span>{preset.label}</span>
+            </button>
+          );
+        })}
+      </div>
+
       <div className="bg-card-bg border border-card-border rounded-xl overflow-hidden shadow-sm">
         <canvas
           ref={canvasRef}
@@ -233,9 +434,24 @@ export default function FloorPlanEditor({ tables, onChange, backgroundImage }: F
           onTouchEnd={handlePointerUp}
         />
       </div>
-      <p className="text-xs text-muted mt-2 text-center">
-        Drag tables to position them on the floor plan
-      </p>
+
+      <div className="flex items-center justify-between">
+        <p className="text-xs text-muted">
+          Drag items to position them. {selected?.kind === "fixture" && "Press Delete to remove fixture."}
+        </p>
+        {selected?.kind === "fixture" && (
+          <button
+            onClick={handleDeleteSelected}
+            className="flex items-center gap-1 px-3 py-1 text-xs font-medium text-red-600 border border-red-200
+              rounded-lg hover:bg-red-50 transition-colors"
+          >
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+            Remove
+          </button>
+        )}
+      </div>
     </div>
   );
 }

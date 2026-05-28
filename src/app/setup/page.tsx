@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { WeddingEvent, Table, Guest, EventData } from "@/lib/types";
+import { WeddingEvent, Table, Guest, Fixture, EventData } from "@/lib/types";
 import { saveEvent, generateSlug } from "@/lib/storage";
 import EventDetailsStep from "@/components/SetupWizard/EventDetailsStep";
 import TablesStep from "@/components/SetupWizard/TablesStep";
@@ -22,11 +22,13 @@ export default function SetupPage() {
   });
   const [tables, setTables] = useState<Table[]>([]);
   const [guests, setGuests] = useState<Guest[]>([]);
+  const [fixtures, setFixtures] = useState<Fixture[]>([]);
 
   const eventData: EventData = {
     event: { ...event, slug: generateSlug(event.title) },
     tables,
     guests,
+    fixtures,
   };
 
   const handlePublish = () => {
@@ -35,6 +37,7 @@ export default function SetupPage() {
       event: { ...event, slug },
       tables,
       guests,
+      fixtures,
     };
     saveEvent(data);
     router.push(`/event/${slug}`);
@@ -106,6 +109,8 @@ export default function SetupPage() {
             <TablesStep
               tables={tables}
               onChange={setTables}
+              fixtures={fixtures}
+              onFixturesChange={setFixtures}
               onNext={() => setStep(2)}
               onBack={() => setStep(0)}
               backgroundImage={event.floorPlanBg}

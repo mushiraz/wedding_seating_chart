@@ -1,23 +1,35 @@
 "use client";
 
-import { Table } from "@/lib/types";
+import { Table, Fixture } from "@/lib/types";
 import { v4 as uuidv4 } from "uuid";
 import FloorPlanEditor from "@/components/FloorPlanEditor";
 
 interface TablesStepProps {
   tables: Table[];
   onChange: (tables: Table[]) => void;
+  fixtures: Fixture[];
+  onFixturesChange: (fixtures: Fixture[]) => void;
   onNext: () => void;
   onBack: () => void;
   backgroundImage?: string;
 }
 
-export default function TablesStep({ tables, onChange, onNext, onBack, backgroundImage }: TablesStepProps) {
+export default function TablesStep({
+  tables,
+  onChange,
+  fixtures,
+  onFixturesChange,
+  onNext,
+  onBack,
+  backgroundImage,
+}: TablesStepProps) {
   const addTable = () => {
     const num = tables.length + 1;
-    const cols = 3;
+    const cols = 4;
     const row = Math.floor((num - 1) / cols);
     const col = (num - 1) % cols;
+    const x = 15 + col * 22;
+    const y = 15 + (row % 4) * 22;
     onChange([
       ...tables,
       {
@@ -25,8 +37,8 @@ export default function TablesStep({ tables, onChange, onNext, onBack, backgroun
         label: `Table ${num}`,
         shape: "round",
         seats: 8,
-        x: 20 + col * 30,
-        y: 25 + row * 30,
+        x: Math.min(x, 90),
+        y: Math.min(y, 90),
       },
     ]);
   };
@@ -44,8 +56,8 @@ export default function TablesStep({ tables, onChange, onNext, onBack, backgroun
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-semibold text-foreground mb-1">Tables</h2>
-        <p className="text-muted text-sm">Add your tables and configure their seating</p>
+        <h2 className="text-xl font-semibold text-foreground mb-1">Tables & Layout</h2>
+        <p className="text-muted text-sm">Add tables, doors, stages, and other elements to your layout</p>
       </div>
 
       <div className="space-y-3">
@@ -106,12 +118,14 @@ export default function TablesStep({ tables, onChange, onNext, onBack, backgroun
         + Add Table
       </button>
 
-      {tables.length > 0 && (
+      {(tables.length > 0 || fixtures.length > 0) && (
         <div>
-          <p className="text-sm font-medium text-foreground mb-2">Arrange Tables</p>
+          <p className="text-sm font-medium text-foreground mb-2">Arrange Layout</p>
           <FloorPlanEditor
             tables={tables}
-            onChange={onChange}
+            onTablesChange={onChange}
+            fixtures={fixtures}
+            onFixturesChange={onFixturesChange}
             backgroundImage={backgroundImage}
           />
         </div>
