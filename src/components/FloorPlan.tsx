@@ -19,6 +19,8 @@ const FIXTURE_COLORS: Record<FixtureType, { fill: string; stroke: string; textCo
   dancefloor: { fill: "#d4a0a0", stroke: "#b87878", textColor: "#ffffff" },
   bar:        { fill: "#5a8fa8", stroke: "#3d6e84", textColor: "#ffffff" },
   dj:         { fill: "#a85a8f", stroke: "#843d6e", textColor: "#ffffff" },
+  floorwrap:  { fill: "#c4956a", stroke: "#9e7350", textColor: "#ffffff" },
+  cake:       { fill: "#e8d5b8", stroke: "#c4b59a", textColor: "#5a5550" },
 };
 
 function getChairPositions(
@@ -122,6 +124,36 @@ function drawFixtureOnCanvas(
     ctx.strokeStyle = "rgba(122, 99, 68, 0.4)";
     ctx.lineWidth = 1;
     ctx.stroke();
+  } else if (fixture.type === "floorwrap") {
+    ctx.fillStyle = colors.fill;
+    ctx.fillRect(cx - w / 2, cy - h / 2, w, h);
+    const stripeCount = Math.floor(w / 8);
+    for (let s = 0; s < stripeCount; s++) {
+      const sx = cx - w / 2 + (s + 0.5) * (w / stripeCount);
+      ctx.beginPath();
+      ctx.moveTo(sx, cy - h / 2 + 2);
+      ctx.lineTo(sx, cy + h / 2 - 2);
+      ctx.strokeStyle = "rgba(255,255,255,0.25)";
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
+    ctx.strokeStyle = colors.stroke;
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(cx - w / 2, cy - h / 2, w, h);
+  } else if (fixture.type === "cake") {
+    const radius = Math.min(w, h) / 2;
+    ctx.beginPath();
+    ctx.arc(cx, cy, radius, 0, 2 * Math.PI);
+    ctx.fillStyle = colors.fill;
+    ctx.fill();
+    ctx.strokeStyle = colors.stroke;
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(cx, cy, radius * 0.6, 0, 2 * Math.PI);
+    ctx.strokeStyle = "rgba(196,181,154,0.5)";
+    ctx.lineWidth = 1;
+    ctx.stroke();
   } else {
     ctx.fillStyle = colors.fill;
     ctx.fillRect(cx - w / 2, cy - h / 2, w, h);
@@ -166,7 +198,7 @@ export default function FloorPlan({
     const updateSize = () => {
       if (containerRef.current) {
         const w = containerRef.current.clientWidth;
-        setDimensions({ width: w, height: Math.max(400, w * 0.6) });
+        setDimensions({ width: w, height: Math.max(400, w * 0.63) });
       }
     };
     updateSize();
@@ -221,9 +253,19 @@ export default function FloorPlan({
       const cy = (table.y / 100) * dimensions.height;
       const isHighlighted = highlightedTableId === table.id;
       const isHovered = hoveredTable === table.id;
+      const rot = table.rotation || 0;
+
+      ctx.save();
+      if (rot) {
+        ctx.translate(cx, cy);
+        ctx.rotate((rot * Math.PI) / 180);
+        ctx.translate(-cx, -cy);
+      }
 
       if (table.shape === "round") {
-        const r = Math.min(dimensions.width, dimensions.height) * 0.055;
+        const r = table.width
+          ? (table.width / 100) * dimensions.width / 2
+          : Math.min(dimensions.width, dimensions.height) * 0.04;
 
         if (isHighlighted) {
           ctx.beginPath();
@@ -283,6 +325,8 @@ export default function FloorPlan({
       ctx.textBaseline = "middle";
       ctx.fillText(table.label, cx, cy);
 
+      ctx.restore();
+
       const tGuests = gMap[table.id] || [];
       if (isHighlighted && tGuests.length > 0) {
         const listY = cy + (table.shape === "round"
@@ -290,6 +334,7 @@ export default function FloorPlan({
           : ((table.height || 6) * (dimensions.height / 100)) / 2 + 25);
 
         ctx.font = `${Math.max(9, dimensions.width * 0.011)}px Inter, sans-serif`;
+        ctx.textAlign = "center";
         ctx.fillStyle = "#3d5c3d";
         for (let i = 0; i < Math.min(tGuests.length, 4); i++) {
           ctx.fillText(tGuests[i].name, cx, listY + i * 14);

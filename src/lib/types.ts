@@ -15,9 +15,10 @@ export interface Table {
   y: number;
   width?: number;
   height?: number;
+  rotation?: number;
 }
 
-export type FixtureType = "door" | "stage" | "walkway" | "dancefloor" | "bar" | "dj";
+export type FixtureType = "door" | "stage" | "walkway" | "dancefloor" | "bar" | "dj" | "floorwrap" | "cake";
 
 export interface Fixture {
   id: string;
@@ -37,6 +38,8 @@ export const FIXTURE_PRESETS: Record<FixtureType, { label: string; width: number
   dancefloor: { label: "Dance Floor", width: 20, height: 20, icon: "💃" },
   bar: { label: "Bar", width: 15, height: 5, icon: "🍸" },
   dj: { label: "DJ Booth", width: 10, height: 6, icon: "🎧" },
+  floorwrap: { label: "Floor Wrap", width: 25, height: 3, icon: "🎀" },
+  cake: { label: "Cake", width: 4, height: 4, icon: "🎂" },
 };
 
 export interface Guest {
@@ -44,6 +47,9 @@ export interface Guest {
   name: string;
   tableId: string;
   seatNumber?: number;
+  dietaryRestrictions?: string;
+  songRequest?: string;
+  advice?: string;
 }
 
 export interface EventData {

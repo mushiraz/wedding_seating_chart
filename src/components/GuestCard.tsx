@@ -23,8 +23,13 @@ export default function GuestCard({ guest, table, highlighted, animationDelay = 
         {guest.name}
       </p>
       <p className="text-muted text-[11px] tracking-[0.15em] uppercase mt-1.5 font-medium">
-        {table?.label || `Table ${guest.tableId}`}
+        {table?.label || (guest.tableId ? `Table ${guest.tableId}` : "Unassigned")}
       </p>
+      {guest.dietaryRestrictions && (
+        <p className="text-amber-600/80 text-[10px] mt-1 truncate" title={guest.dietaryRestrictions}>
+          🍽 {guest.dietaryRestrictions}
+        </p>
+      )}
     </div>
   );
 }
