@@ -14,8 +14,8 @@ const greatVibes = Great_Vibes({
 });
 
 export const metadata: Metadata = {
-  title: "Wedding Seating Chart",
-  description: "Find your seat at the wedding",
+  title: "Ahad & Rehnuba",
+  description: "Find your seat at Ahad and Rehnuba's wedding",
 };
 
 export default function RootLayout({

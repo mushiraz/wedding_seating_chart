@@ -54,10 +54,12 @@ Jane Doe,2
 
 ## Deployment
 
-Deploy to Vercel with one click:
+The site runs as a Cloudflare Worker (`wedding-seating-chart`) on `ahadandrehnuba.com` and `www.ahadandrehnuba.com`. The root path redirects to `/event/ahad-and-rehnuba`.
+
+Put `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` in `.env.local` (see `.env.example`), then:
 
 ```bash
-npx vercel
+npm run deploy:vinext
 ```
 
-Or push to GitHub and connect the repo to [Vercel](https://vercel.com) for automatic deployments.
+`npm run dev` still starts the Next.js dev server. `npm run dev:vinext` starts the Worker locally on port 3001.

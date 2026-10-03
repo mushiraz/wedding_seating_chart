@@ -14,9 +14,11 @@ export default function Header({ event }: HeaderProps) {
       <h1 className="font-script text-4xl md:text-5xl lg:text-6xl text-foreground mt-2 animate-fade-in">
         {event.title}
       </h1>
-      <p className="text-muted text-sm md:text-base tracking-[0.25em] uppercase mt-3 animate-fade-in" style={{ animationDelay: "100ms" }}>
-        {event.date}
-      </p>
+      {event.date ? (
+        <p className="text-muted text-sm md:text-base tracking-[0.25em] uppercase mt-3 animate-fade-in" style={{ animationDelay: "100ms" }}>
+          {event.date}
+        </p>
+      ) : null}
 
       <div className="mt-4 flex justify-center animate-fade-in" style={{ animationDelay: "200ms" }}>
         <div className="flex items-center gap-3">

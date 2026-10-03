@@ -25,9 +25,15 @@ export default function EventPage() {
   const [view, setView] = useState<"list" | "map">("list");
   const [highlightedTableId, setHighlightedTableId] = useState<string | null>(null);
   const [editing, setEditing] = useState(false);
+  const [editUnlocked, setEditUnlocked] = useState(false);
   const [editNewName, setEditNewName] = useState("");
   const [editNewTableId, setEditNewTableId] = useState("");
   const [editSearch, setEditSearch] = useState("");
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setEditUnlocked(params.get("edit") === "1");
+  }, []);
 
   useEffect(() => {
     let loaded = loadEvent(slug);
@@ -154,6 +160,7 @@ export default function EventPage() {
       {/* Edit mode toggle */}
       <div className="max-w-5xl mx-auto w-full px-4 mb-2">
         <div className="flex justify-end">
+          {editUnlocked && (
           <button
             onClick={() => setEditing(!editing)}
             className={`
@@ -169,6 +176,7 @@ export default function EventPage() {
             </svg>
             {editing ? "Done Editing" : "Edit Seating"}
           </button>
+          )}
         </div>
       </div>
 
