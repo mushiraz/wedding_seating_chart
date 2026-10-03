@@ -56,15 +56,10 @@ export default function RoomMap({ tables, fixtures, selectedId, onSelect }: Room
   const cake = fixtures.find((fixture) => fixture.type === "cake");
   const dj = fixtures.find((fixture) => fixture.type === "dj");
   const bars = fixtures.filter((fixture) => fixture.type === "bar");
-
   return (
     <div id="room-map" className="rounded-2xl border border-line bg-cream/60 p-1.5">
       <svg viewBox="0 0 100 100" className="block h-auto w-full" role="group" aria-label="Map of the reception room">
         <rect x="1" y="1" width="98" height="98" rx="1.5" fill="#fbf8f2" stroke="#cfc4b0" strokeWidth="0.35" />
-        <rect x="39" y="0.6" width="15" height="1.2" fill="#fbf8f2" />
-        <text x="46.5" y="4.3" textAnchor="middle" fill="#6a624f" fontSize="2" fontWeight="600" letterSpacing="0.3">
-          ENTRANCE
-        </text>
 
         {dance && (
           <g>
@@ -101,6 +96,18 @@ export default function RoomMap({ tables, fixtures, selectedId, onSelect }: Room
             </text>
           </g>
         ))}
+
+        {/* Bottom-left entrance — gap in the wall */}
+        <rect x="4" y="98.4" width="15" height="1.2" fill="#fbf8f2" />
+        <text x="11.5" y="96" textAnchor="middle" fill="#6a624f" fontSize="2" fontWeight="600" letterSpacing="0.3">
+          ENTRANCE
+        </text>
+
+        {/* Right-side entrance — gap in the wall */}
+        <rect x="98.4" y="40" width="1.2" height="15" fill="#fbf8f2" />
+        <text x="96" y="47.5" textAnchor="middle" fill="#6a624f" fontSize="2" fontWeight="600" letterSpacing="0.3" transform="rotate(90 96 47.5)">
+          ENTRANCE
+        </text>
 
         {cake && (
           <g>

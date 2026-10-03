@@ -514,7 +514,7 @@
     },
     {
       "id": "g41",
-      "name": "Wahab Ata +1",
+      "name": "Roshana Ata",
       "tableId": "t19"
     },
     {
@@ -1680,24 +1680,6 @@
   ],
   "fixtures": [
     {
-      "id": "fix-door1",
-      "type": "door",
-      "label": "Door",
-      "x": 43,
-      "y": 4,
-      "width": 5,
-      "height": 4
-    },
-    {
-      "id": "fix-door2",
-      "type": "door",
-      "label": "Door",
-      "x": 49,
-      "y": 4,
-      "width": 5,
-      "height": 4
-    },
-    {
       "id": "fix-dance",
       "type": "dancefloor",
       "label": "Dance Floor",
@@ -1752,41 +1734,22 @@
       "height": 3
     },
     {
-      "id": "fix-1790913280726-xbus",
+      "id": "fix-entrance-bottom",
       "type": "door",
-      "label": "Door",
-      "x": 14.012096774193546,
-      "y": 97.84306195596518,
-      "width": 6,
+      "label": "Entrance",
+      "x": 11.5,
+      "y": 98,
+      "width": 15,
       "height": 3
     },
     {
-      "id": "fix-1790913281170-lm5i",
+      "id": "fix-entrance-right",
       "type": "door",
-      "label": "Door",
-      "x": 7.358870967741936,
-      "y": 97.84306195596518,
-      "width": 6,
-      "height": 3
-    },
-    {
-      "id": "fix-1790913291250-9xb0",
-      "type": "door",
-      "label": "Door",
+      "label": "Entrance",
       "x": 98,
-      "y": 41.8394777265745,
-      "width": 6,
-      "height": 3,
-      "rotation": 270
-    },
-    {
-      "id": "fix-1790913291710-paeb",
-      "type": "door",
-      "label": "Door",
-      "x": 98,
-      "y": 51.760112647209425,
-      "width": 6,
-      "height": 3,
+      "y": 47.5,
+      "width": 3,
+      "height": 15,
       "rotation": 270
     }
   ]
