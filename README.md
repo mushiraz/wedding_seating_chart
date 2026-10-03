@@ -2,54 +2,25 @@
 
 The guest guide for Ahad and Rehnuba's wedding. A QR code at the venue opens this site: find a seat, see the room, and follow the day.
 
-## Features
+## What guests get
 
-- **Guest Search** — Real-time name filtering to find seat assignments
-- **Card Grid View** — Elegant 3-column grid showing each guest's name and table
-- **Interactive Floor Plan** — Canvas-based map view with table layouts and chair positions
-- **Setup Wizard** — Multi-step organizer flow to configure event details, tables, and guest assignments
-- **Drag-and-Drop Editor** — Position tables on an optional floor plan background image
-- **CSV Import** — Bulk upload guests from a CSV file (`name, table`)
-- **QR Code Sharing** — Auto-generated QR code for guests to scan
-- **Mobile Responsive** — Optimized for phones (the primary way guests will access it)
+- **Find your seat**: search any part of a name (first, middle, last, nickname, any order). Small typos and Muhammad/Md spellings still match.
+- **The room**: a map that fits the phone screen, with the guest's table highlighted, where it sits in the room, and who else is at it. Every table is also one tap away in the table grid.
+- **Schedule, details, wedding party**: the day's timeline, dress code, dinner, gifts, the venue address and a Maps link.
 
-## Tech Stack
+`/event/<anything>` serves the same page so older links keep working.
 
-- [Next.js 16](https://nextjs.org/) (App Router)
-- [Tailwind CSS](https://tailwindcss.com/)
-- [qrcode.react](https://github.com/zpao/qrcode.react) for QR generation
-- [PapaParse](https://www.papaparse.com/) for CSV parsing
-- HTML Canvas for the interactive floor plan
-- localStorage for data persistence (no database needed)
+## Data
 
-## Getting Started
+- `src/data/ahad-rehnuba.json` holds the tables, room fixtures and guests (`id`, `name`, `tableId` only). It ships to the browser, so keep RSVP notes (dietary, songs, advice) out of it.
+- `src/data/wedding-day.ts` holds the schedule, notes and wedding party.
+
+## Development
 
 ```bash
 npm install
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) for the guest guide. `/event/ahad-and-rehnuba` shows the same page. Add `?edit=1` to open the seating editor.
-
-### Quick Demo
-
-Visit `/event/john-sarah-wedding` to see a pre-loaded demo with sample data. `/setup` is the organizer wizard.
-
-### Creating a Seating Chart
-
-1. Open `/setup`
-2. Enter event details (title, date, optional photo and floor plan background)
-3. Add tables (round or rectangle, set number of seats)
-4. Drag tables into position on the floor plan
-5. Add guests manually or upload a CSV file
-6. Preview and publish — a shareable URL and QR code are generated
-
-### CSV Format
-
-```
-name,table
-John Smith,1
-Jane Doe,2
+npm run dev      # Next.js dev server
+npm test         # search and table label tests
 ```
 
 ## Deployment

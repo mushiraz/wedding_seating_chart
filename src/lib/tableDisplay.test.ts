@@ -25,3 +25,20 @@ test("search requires every word and does not invent a match", () => {
   assert.deepEqual(findGuests(guests, "fairoj shirazi"), []);
   assert.equal(findGuests(guests, "   ").length, 0);
 });
+
+test("search hits middle names, nicknames and any word order", () => {
+  const guests = [guest("Asadur Rahman Akand"), guest("Chinmayee (May) Gidwani"), guest("Md. Shameem Iqbal"), guest("Asad Rahim")];
+  const names = (query: string) => findGuests(guests, query).map((item) => item.name);
+  assert.deepEqual(names("rahman"), ["Asadur Rahman Akand"]);
+  assert.deepEqual(names("akand asadur"), ["Asadur Rahman Akand"]);
+  assert.deepEqual(names("may"), ["Chinmayee (May) Gidwani"]);
+  assert.deepEqual(names("md shameem"), ["Md. Shameem Iqbal"]);
+  assert.deepEqual(names("asad"), ["Asad Rahim", "Asadur Rahman Akand"], "whole-word hit ranks first");
+});
+
+test("search forgives a typo only when nothing matches exactly", () => {
+  const guests = [guest("Muhammad Shirazi"), guest("Sana Ali"), guest("Sara Khan")];
+  assert.deepEqual(findGuests(guests, "mohammed").map((item) => item.name), ["Muhammad Shirazi"]);
+  assert.deepEqual(findGuests(guests, "sara").map((item) => item.name), ["Sara Khan"]);
+  assert.deepEqual(findGuests([guest("Md Shahadat Hossain")], "mohammad shahadat").length, 1);
+});

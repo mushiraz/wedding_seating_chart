@@ -1,142 +1,105 @@
-"use client";
-
 import { EventData } from "@/lib/types";
 import { weddingDay } from "@/data/wedding-day";
 import SeatFinder from "./SeatFinder";
 
-interface VenueGuideProps {
-  data: EventData;
-  editUnlocked?: boolean;
-  onEdit?: () => void;
-}
-
 const links = [
-  { href: "#find", label: "Your seat" },
-  { href: "#today", label: "Today" },
-  { href: "#dinner", label: "Dinner" },
-  { href: "#party", label: "Party" },
-  { href: "#know", label: "Good to know" },
+  { href: "#find", label: "Seat" },
+  { href: "#today", label: "Schedule" },
+  { href: "#know", label: "Details" },
+  { href: "#party", label: "Wedding party" },
 ];
 
-export default function VenueGuide({ data, editUnlocked, onEdit }: VenueGuideProps) {
+export default function VenueGuide({ data }: { data: EventData }) {
   return (
-    <div className="min-h-screen text-[#1c2b24]">
-      <nav className="sticky top-0 z-20 border-b border-[#e4dccb]/80 bg-[#f6f1e8]/90 backdrop-blur-md">
-        <div className="max-w-5xl mx-auto px-4 py-3 flex flex-wrap items-center gap-x-4 gap-y-2">
-          <a href="#top" className="font-script text-2xl text-[#1c2b24]">
-            Ahad & Rehnuba
-          </a>
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm sm:ml-auto">
-            {links.map((link) => (
-              <a key={link.href} href={link.href} className="text-[#3f4a42] hover:text-[#1c2b24]">
-                {link.label}
-              </a>
-            ))}
-            {editUnlocked && onEdit && (
-              <button type="button" onClick={onEdit} className="shrink-0 text-xs uppercase tracking-wider text-[#6a624f]">
-                Edit
-              </button>
-            )}
-          </div>
+    <div className="min-h-screen text-ink">
+      <nav className="sticky top-0 z-20 border-b border-line/80 bg-cream/90 backdrop-blur-md">
+        <div className="max-w-xl mx-auto flex items-center gap-1 overflow-x-auto px-3 py-2 text-sm [scrollbar-width:none]">
+          {links.map((link) => (
+            <a key={link.href} href={link.href} className="shrink-0 rounded-full px-3 py-1.5 text-body hover:bg-white hover:text-ink">
+              {link.label}
+            </a>
+          ))}
         </div>
       </nav>
 
-      <header id="top" className="max-w-3xl mx-auto px-5 pt-10 pb-6 text-center animate-fade-in-up">
-        <p className="text-[11px] tracking-[0.32em] uppercase text-[#6a624f]">{weddingDay.shortDate}</p>
-        <h1 className="font-script text-6xl sm:text-7xl mt-3 leading-none">{weddingDay.couple}</h1>
-        <p className="font-serif text-2xl mt-3 text-[#3d5c3d]">{weddingDay.occasion}</p>
-        <div className="mx-auto mt-5 h-px w-16 bg-[#b08948]" />
-        <p className="mt-4 text-sm text-[#3f4a42]">
-          {weddingDay.place}
-          <br />
-          Caledon, Ontario
-        </p>
+      <header className="max-w-xl mx-auto px-5 pt-8 pb-6 text-center animate-fade-in-up">
+        <p className="text-[11px] font-medium uppercase tracking-[0.32em] text-label">{weddingDay.dateLabel}</p>
+        <h1 className="font-script text-6xl sm:text-7xl mt-2 leading-none">{weddingDay.couple}</h1>
+        <p className="font-serif text-xl mt-2 text-sage">{weddingDay.occasion}</p>
+        <p className="mt-2 text-sm text-soft">{weddingDay.place}</p>
       </header>
 
-      <main className="px-4 pb-20 space-y-16">
+      <main className="px-4 pb-20 space-y-14">
         <SeatFinder data={data} />
 
-        <section id="today" className="scroll-mt-20 max-w-3xl mx-auto">
-          <p className="text-[11px] tracking-[0.28em] uppercase text-[#6a624f]">Today</p>
-          <h2 className="font-serif text-4xl mt-1">How the day goes</h2>
-          <p className="mt-2 text-sm text-[#5c564c]">{weddingDay.dateLabel}</p>
-          <ol className="mt-6 border-l border-[#d9c7a1] ml-3 space-y-6">
+        <section id="today" className="max-w-xl mx-auto">
+          <SectionTitle>Schedule</SectionTitle>
+          <ol className="mt-5 space-y-5 border-l border-[#d9c7a1] ml-2">
             {weddingDay.timeline.map((item) => (
-              <li key={item.title} className="pl-5 relative">
-                <span className="absolute -left-[5px] top-1.5 h-2.5 w-2.5 rounded-full bg-[#b08948]" />
-                <p className="text-[13px] tracking-[0.16em] uppercase text-[#6a624f] tabular-nums">{item.time}</p>
-                <h3 className="font-serif text-2xl">{item.title}</h3>
-                <p className="text-sm leading-relaxed text-[#3f4a42]">{item.detail}</p>
+              <li key={item.title} className="relative pl-5">
+                <span className="absolute -left-[5px] top-2 h-2.5 w-2.5 rounded-full bg-gold" />
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-label tabular-nums">{item.time}</p>
+                <h3 className="font-serif text-2xl leading-snug">{item.title}</h3>
+                <p className="text-sm leading-relaxed text-body">{item.detail}</p>
               </li>
             ))}
           </ol>
         </section>
 
-        <section id="dinner" className="scroll-mt-20 max-w-3xl mx-auto">
-          <p className="text-[11px] tracking-[0.28em] uppercase text-[#6a624f]">At the table</p>
-          <h2 className="font-serif text-4xl mt-1">{weddingDay.dinner.title}</h2>
-          <ul className="mt-4 space-y-3">
-            {weddingDay.dinner.points.map((point) => (
-              <li key={point} className="rounded-2xl border border-[#e4dccb] bg-white px-4 py-3 text-sm leading-relaxed text-[#3f4a42]">
-                {point}
-              </li>
-            ))}
-          </ul>
-        </section>
-
-        <section id="party" className="scroll-mt-20 max-w-5xl mx-auto">
-          <p className="text-[11px] tracking-[0.28em] uppercase text-[#6a624f]">With them today</p>
-          <h2 className="font-serif text-4xl mt-1">Wedding party</h2>
-          <div className="mt-6 grid gap-8 md:grid-cols-3">
-            <PartyColumn title="Parents" people={weddingDay.parents} />
-            <PartyColumn title="With the bride" people={weddingDay.bridalParty} />
-            <PartyColumn title="With the groom" people={weddingDay.groomParty} />
-          </div>
-        </section>
-
-        <section id="know" className="scroll-mt-20 max-w-3xl mx-auto">
-          <p className="text-[11px] tracking-[0.28em] uppercase text-[#6a624f]">While you are here</p>
-          <h2 className="font-serif text-4xl mt-1">Good to know</h2>
-          <div className="mt-5 grid gap-3">
+        <section id="know" className="max-w-xl mx-auto">
+          <SectionTitle>Details</SectionTitle>
+          <dl className="mt-5 divide-y divide-line rounded-2xl border border-line bg-paper">
             {weddingDay.notes.map((note) => (
-              <article key={note.title} className="rounded-2xl border border-[#e4dccb] bg-white px-4 py-4">
-                <h3 className="font-serif text-2xl">{note.title}</h3>
-                <p className="mt-1 text-sm leading-relaxed text-[#3f4a42]">{note.detail}</p>
-              </article>
+              <div key={note.title} className="px-4 py-3.5">
+                <dt className="font-semibold">{note.title}</dt>
+                <dd className="mt-0.5 text-sm leading-relaxed text-body">{note.detail}</dd>
+              </div>
             ))}
+            <div className="px-4 py-3.5">
+              <dt className="font-semibold">Venue</dt>
+              <dd className="mt-0.5 text-sm leading-relaxed text-body">
+                {weddingDay.place}
+                <br />
+                {weddingDay.address}
+              </dd>
+              <a
+                href={weddingDay.mapsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-3 inline-flex items-center rounded-full bg-sage px-4 py-2 text-sm font-medium text-cream"
+              >
+                Open in Maps
+              </a>
+            </div>
+          </dl>
+        </section>
+
+        <section id="party" className="max-w-xl mx-auto">
+          <SectionTitle>Wedding party</SectionTitle>
+          <div className="mt-5 space-y-6">
+            <PartyGroup title="Parents" people={weddingDay.parents} />
+            <PartyGroup title="With the bride" people={weddingDay.bridalParty} />
+            <PartyGroup title="With the groom" people={weddingDay.groomParty} />
           </div>
-          <p className="mt-6 text-sm text-[#3f4a42]">
-            {weddingDay.place}
-            <br />
-            {weddingDay.address}
-          </p>
-          <a
-            href={weddingDay.mapsUrl}
-            className="inline-block mt-3 text-sm text-[#3d5c3d] underline underline-offset-4"
-          >
-            Open in Maps
-          </a>
         </section>
       </main>
     </div>
   );
 }
 
-function PartyColumn({
-  title,
-  people,
-}: {
-  title: string;
-  people: readonly { name: string; role: string }[];
-}) {
+function SectionTitle({ children }: { children: React.ReactNode }) {
+  return <h2 className="font-serif text-3xl sm:text-4xl">{children}</h2>;
+}
+
+function PartyGroup({ title, people }: { title: string; people: readonly { name: string; role: string }[] }) {
   return (
     <div>
-      <h3 className="font-serif text-2xl mb-3">{title}</h3>
-      <ul className="space-y-3">
+      <h3 className="text-xs font-semibold uppercase tracking-[0.18em] text-label">{title}</h3>
+      <ul className="mt-2 grid grid-cols-2 gap-x-4 gap-y-2.5">
         {people.map((person) => (
           <li key={person.name}>
-            <p className="font-medium">{person.name}</p>
-            <p className="text-sm text-[#5c564c]">{person.role}</p>
+            <p className="font-medium leading-tight">{person.name}</p>
+            <p className="text-[13px] text-soft leading-snug">{person.role}</p>
           </li>
         ))}
       </ul>

@@ -38,14 +38,6 @@ export const weddingDay = {
       detail: "The celebration at the venue runs through 11:00.",
     },
   ],
-  dinner: {
-    title: "Dinner",
-    points: [
-      "All food and drink served today is halal.",
-      "Dinner is served during the reception.",
-      "If you left a kitchen note with your reply, it shows beside your name once the search finds you.",
-    ],
-  },
   parents: [
     { name: "Sorrur Samad", role: "Father of the bride" },
     { name: "Shamima (Moni)", role: "Mother of the bride" },
@@ -73,6 +65,10 @@ export const weddingDay = {
   ],
   notes: [
     {
+      title: "Dinner",
+      detail: "Everything served today is halal. Dinner is served during the walima reception.",
+    },
+    {
       title: "What to wear",
       detail:
         "Semi-formal, or South Asian attire. The ceremony is outdoors and the reception is warm indoors, so bring a layer.",
@@ -88,7 +84,7 @@ export const weddingDay = {
     {
       title: "If your name is missing",
       detail:
-        "Search once with just a first name and once with a last name. If you still do not appear, ask someone from either family.",
+        "Search with just your first name, then just your last name. If you still do not appear, ask anyone from either family.",
     },
   ],
 } as const;

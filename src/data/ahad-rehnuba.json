@@ -320,20 +320,17 @@
     {
       "id": "g1",
       "name": "Irfan Abbas",
-      "tableId": "t34",
-      "dietaryRestrictions": "Halal"
+      "tableId": "t34"
     },
     {
       "id": "g2",
       "name": "Andleeb Zehra",
-      "tableId": "t35",
-      "dietaryRestrictions": "Halal"
+      "tableId": "t35"
     },
     {
       "id": "g3",
       "name": "Asad Irfan",
-      "tableId": "t34",
-      "dietaryRestrictions": "Halal"
+      "tableId": "t34"
     },
     {
       "id": "g4",
@@ -343,21 +340,17 @@
     {
       "id": "g5",
       "name": "Ameena Abid",
-      "tableId": "t20",
-      "songRequest": "Dil Dooba",
-      "advice": "Keep on delighting in each other’s presence. May Allah grant you a long and happy marriage."
+      "tableId": "t20"
     },
     {
       "id": "g6",
       "name": "Emran Abid",
-      "tableId": "t20",
-      "dietaryRestrictions": "Halal"
+      "tableId": "t20"
     },
     {
       "id": "g7",
       "name": "Rani Abid",
-      "tableId": "t20",
-      "dietaryRestrictions": "Halal"
+      "tableId": "t20"
     },
     {
       "id": "g8",
@@ -392,8 +385,7 @@
     {
       "id": "g14",
       "name": "Abrar Ahsan",
-      "tableId": "t19",
-      "advice": "Always think of the positive things as you proceed with life. Love always wins"
+      "tableId": "t19"
     },
     {
       "id": "g15",
@@ -453,14 +445,12 @@
     {
       "id": "g26",
       "name": "Manzurul Alam",
-      "tableId": "t11",
-      "advice": "Try to understand each other and be happy by the grace of Allah."
+      "tableId": "t11"
     },
     {
       "id": "g27",
       "name": "Sarwoara Habib . Nina",
-      "tableId": "t11",
-      "advice": "Try to understand each other and be happy by the grace of Allah."
+      "tableId": "t11"
     },
     {
       "id": "g28",
@@ -470,16 +460,12 @@
     {
       "id": "g30",
       "name": "Nicholas An",
-      "tableId": "t19",
-      "songRequest": "September - Earth Wind and Fire",
-      "advice": "Don't sweat the petty things, and don't pet the sweaty things."
+      "tableId": "t19"
     },
     {
       "id": "g31",
       "name": "Moonie Moua",
-      "tableId": "t19",
-      "songRequest": "September - Earth Wind and Fire",
-      "advice": "Don't sweat the petty things, and don't pet the sweaty things."
+      "tableId": "t19"
     },
     {
       "id": "g32",
@@ -494,38 +480,32 @@
     {
       "id": "g34",
       "name": "Shamim Ara",
-      "tableId": "t15",
-      "advice": "Always keep dating"
+      "tableId": "t15"
     },
     {
       "id": "g35",
       "name": "Shaikh Faruk",
-      "tableId": "t15",
-      "advice": "Always keep dating"
+      "tableId": "t15"
     },
     {
       "id": "g36",
       "name": "Samir Faruk",
-      "tableId": "t15",
-      "advice": "Always keep dating"
+      "tableId": "t15"
     },
     {
       "id": "g37",
       "name": "Dana Faruk",
-      "tableId": "t15",
-      "advice": "Always keep dating"
+      "tableId": "t15"
     },
     {
       "id": "g38",
       "name": "Hunaiza Arshad",
-      "tableId": "t20",
-      "dietaryRestrictions": "Allergic to avocados"
+      "tableId": "t20"
     },
     {
       "id": "g39",
       "name": "Aisha Arshad",
-      "tableId": "t20",
-      "dietaryRestrictions": "Allergic to avocados"
+      "tableId": "t20"
     },
     {
       "id": "g40",
@@ -565,18 +545,12 @@
     {
       "id": "g47",
       "name": "Anindita Bhowmik",
-      "tableId": "t33",
-      "dietaryRestrictions": "No beefff plslslsls",
-      "songRequest": "Risk it all by Bruno Mars ehehe",
-      "advice": "Always and I mean alwaysss do ur best to rmr that you guys are a team and there aint no obstacle yall can’t conquer! When there is a will there is a always a way!!"
+      "tableId": "t33"
     },
     {
       "id": "g48",
       "name": "Arnab Bhowmik",
-      "tableId": "t2",
-      "dietaryRestrictions": "No beefff plslslsls",
-      "songRequest": "Risk it all by Bruno Mars ehehe",
-      "advice": "Always and I mean alwaysss do ur best to rmr that you guys are a team and there aint no obstacle yall can’t conquer! When there is a will there is a always a way!!"
+      "tableId": "t2"
     },
     {
       "id": "g49",
@@ -601,20 +575,17 @@
     {
       "id": "g53",
       "name": "Mizanur Rahman Bhuiyan",
-      "tableId": "t25",
-      "dietaryRestrictions": "Halal"
+      "tableId": "t25"
     },
     {
       "id": "g54",
       "name": "Shamim Bhuiyan",
-      "tableId": "t25",
-      "dietaryRestrictions": "Halal"
+      "tableId": "t25"
     },
     {
       "id": "g55",
       "name": "Mim Bhuiyan",
-      "tableId": "t25",
-      "dietaryRestrictions": "Halal"
+      "tableId": "t25"
     },
     {
       "id": "g56",
@@ -649,14 +620,12 @@
     {
       "id": "g62",
       "name": "Shafee Chowdhury",
-      "tableId": "t1",
-      "dietaryRestrictions": "Tasfia is allergic to Shrimp and eggplant."
+      "tableId": "t1"
     },
     {
       "id": "g63",
       "name": "Tasfia Sakura Hossain",
-      "tableId": "t1",
-      "dietaryRestrictions": "Tasfia is allergic to Shrimp and eggplant."
+      "tableId": "t1"
     },
     {
       "id": "g64",
@@ -671,23 +640,17 @@
     {
       "id": "g66",
       "name": "Sabrina Costas",
-      "tableId": "t10",
-      "dietaryRestrictions": "No dietary restrictions",
-      "advice": "Communication is key is easier said than done!"
+      "tableId": "t10"
     },
     {
       "id": "g67",
       "name": "Sean Coutinho",
-      "tableId": "t9",
-      "dietaryRestrictions": "Erin is allergic to all nuts except coconut",
-      "advice": "One of the best parts of being married is getting to define your own marriage. There will always be outside opinions on how a marriage/relationship should or shouldn't be, but ultimately you can choose what works best for the two of you."
+      "tableId": "t9"
     },
     {
       "id": "g68",
       "name": "Erin Paul",
-      "tableId": "t9",
-      "dietaryRestrictions": "Erin is allergic to all nuts except coconut",
-      "advice": "One of the best parts of being married is getting to define your own marriage. There will always be outside opinions on how a marriage/relationship should or shouldn't be, but ultimately you can choose what works best for the two of you."
+      "tableId": "t9"
     },
     {
       "id": "g69",
@@ -722,55 +685,42 @@
     {
       "id": "g75",
       "name": "Wazba Faiaz",
-      "tableId": "t32",
-      "dietaryRestrictions": "Halal"
+      "tableId": "t32"
     },
     {
       "id": "g76",
       "name": "Rehnuba Fairoj",
-      "tableId": "t32",
-      "dietaryRestrictions": "Halal"
+      "tableId": "t32"
     },
     {
       "id": "g77",
       "name": "Ahad Shirazi",
-      "tableId": "t35",
-      "dietaryRestrictions": "Halal"
+      "tableId": "t35"
     },
     {
       "id": "g78",
       "name": "Raihanul Ferdous",
-      "tableId": "t11",
-      "dietaryRestrictions": "No, but Muslim food",
-      "advice": "Have patience"
+      "tableId": "t11"
     },
     {
       "id": "g79",
       "name": "Farhad Akhter",
-      "tableId": "t11",
-      "dietaryRestrictions": "No, but Muslim food",
-      "advice": "Have patience"
+      "tableId": "t11"
     },
     {
       "id": "g80",
       "name": "Farhan Ferdous",
-      "tableId": "t11",
-      "dietaryRestrictions": "No, but Muslim food",
-      "advice": "Have patience"
+      "tableId": "t11"
     },
     {
       "id": "g81",
       "name": "Zareen Ferdous",
-      "tableId": "t11",
-      "dietaryRestrictions": "No, but Muslim food",
-      "advice": "Have patience"
+      "tableId": "t11"
     },
     {
       "id": "g82",
       "name": "Amir Feyzi",
-      "tableId": "t20",
-      "dietaryRestrictions": "Sensitivity to ghormeh sabzi (bread or rice included). Not anaphylactic or other allergy signs. I get this urge to share it with everyone because of how much I enjoy it : p",
-      "advice": "May each joy and suffering strengthen your union. \nMay the effort of walking together become effortless with time.\nMay you bring positive change to the world through strengthening each other.\nMay your trust and faith in each other be strong.\nMay you both walk with all of these intentions."
+      "tableId": "t20"
     },
     {
       "id": "g83",
@@ -785,16 +735,12 @@
     {
       "id": "g85",
       "name": "Tyler Freamon",
-      "tableId": "t10",
-      "songRequest": "Roach Killa - Aa",
-      "advice": "Life isn't that serious. Be present for eachother"
+      "tableId": "t10"
     },
     {
       "id": "g86",
       "name": "Anushe Fawad",
-      "tableId": "t10",
-      "songRequest": "Roach Killa - Aa",
-      "advice": "Life isn't that serious. Be present for eachother"
+      "tableId": "t10"
     },
     {
       "id": "g87",
@@ -809,46 +755,37 @@
     {
       "id": "g89",
       "name": "Chinmayee (May) Gidwani",
-      "tableId": "t10",
-      "dietaryRestrictions": "No red meat (dont eat pork or beef). chicken, fish is good, but vegetarian is also fine!"
+      "tableId": "t10"
     },
     {
       "id": "g90",
       "name": "Armin Ale",
-      "tableId": "t10",
-      "dietaryRestrictions": "No red meat (dont eat pork or beef). chicken, fish is good, but vegetarian is also fine!"
+      "tableId": "t10"
     },
     {
       "id": "g91",
       "name": "Atul Gupta",
-      "tableId": "t16",
-      "dietaryRestrictions": "no beef"
+      "tableId": "t16"
     },
     {
       "id": "g92",
       "name": "David Gurevich",
-      "tableId": "t8",
-      "songRequest": "Any anime song such as Bling-Bang-Bang-Born, cruel angel thesis, attack on Titan opening - fun songs!",
-      "advice": "Have a little bit of fun everyday!"
+      "tableId": "t8"
     },
     {
       "id": "g93",
       "name": "Paola (Alex) Garcia",
-      "tableId": "t8",
-      "songRequest": "Any anime song such as Bling-Bang-Bang-Born, cruel angel thesis, attack on Titan opening - fun songs!",
-      "advice": "Have a little bit of fun everyday!"
+      "tableId": "t8"
     },
     {
       "id": "g94",
       "name": "Noyon Hafiz",
-      "tableId": "t6",
-      "dietaryRestrictions": "Sabita somani Veg"
+      "tableId": "t6"
     },
     {
       "id": "g95",
       "name": "Sabita Somani",
-      "tableId": "t6",
-      "dietaryRestrictions": "Sabita somani Veg"
+      "tableId": "t6"
     },
     {
       "id": "g96",
@@ -963,20 +900,17 @@
     {
       "id": "g118",
       "name": "Samira Huq",
-      "tableId": "t33",
-      "dietaryRestrictions": "Halal"
+      "tableId": "t33"
     },
     {
       "id": "g119",
       "name": "Siwa Huq",
-      "tableId": "t2",
-      "dietaryRestrictions": "Halal"
+      "tableId": "t2"
     },
     {
       "id": "g120",
       "name": "Sura Huq",
-      "tableId": "t2",
-      "dietaryRestrictions": "Halal"
+      "tableId": "t2"
     },
     {
       "id": "g121",
@@ -991,8 +925,7 @@
     {
       "id": "g123",
       "name": "Tarana Huq",
-      "tableId": "t1",
-      "advice": "keep smiling ❤️❤️❤️"
+      "tableId": "t1"
     },
     {
       "id": "g124",
@@ -1012,8 +945,7 @@
     {
       "id": "g127",
       "name": "Aiman Hussaini",
-      "tableId": "t23",
-      "dietaryRestrictions": "Halal"
+      "tableId": "t23"
     },
     {
       "id": "g128",
@@ -1073,48 +1005,37 @@
     {
       "id": "g142",
       "name": "Syed Mostafa Kamal",
-      "tableId": "t5",
-      "advice": "Wishing you a beautiful married life filled with love, laughter, trust, and endless support for one another."
+      "tableId": "t5"
     },
     {
       "id": "g143",
       "name": "Shireen Akhter",
-      "tableId": "t5",
-      "advice": "Wishing you a beautiful married life filled with love, laughter, trust, and endless support for one another."
+      "tableId": "t5"
     },
     {
       "id": "g144",
       "name": "Ishraq Kamal",
-      "tableId": "t5",
-      "advice": "Wishing you a beautiful married life filled with love, laughter, trust, and endless support for one another."
+      "tableId": "t5"
     },
     {
       "id": "g145",
       "name": "Biplob Kar",
-      "tableId": "t29",
-      "dietaryRestrictions": "No beef",
-      "advice": "Enjoy your new life fullest"
+      "tableId": "t29"
     },
     {
       "id": "g146",
       "name": "Nipa Kar",
-      "tableId": "t29",
-      "dietaryRestrictions": "No beef",
-      "advice": "Enjoy your new life fullest"
+      "tableId": "t29"
     },
     {
       "id": "g147",
       "name": "Rishan Kar",
-      "tableId": "t29",
-      "dietaryRestrictions": "No beef",
-      "advice": "Enjoy your new life fullest"
+      "tableId": "t29"
     },
     {
       "id": "g148",
       "name": "Ritvik Kar",
-      "tableId": "t29",
-      "dietaryRestrictions": "No beef",
-      "advice": "Enjoy your new life fullest"
+      "tableId": "t29"
     },
     {
       "id": "g149",
@@ -1144,20 +1065,17 @@
     {
       "id": "g154",
       "name": "Mustafiz Khan",
-      "tableId": "t5",
-      "advice": "Congratulations to the newly wed couple"
+      "tableId": "t5"
     },
     {
       "id": "g155",
       "name": "Ambia Ali",
-      "tableId": "t5",
-      "advice": "Congratulations to the newly wed couple"
+      "tableId": "t5"
     },
     {
       "id": "g156",
       "name": "Mehzabeen Khan",
-      "tableId": "t5",
-      "advice": "Congratulations to the newly wed couple"
+      "tableId": "t5"
     },
     {
       "id": "g157",
@@ -1232,34 +1150,27 @@
     {
       "id": "g171",
       "name": "Sam Leung",
-      "tableId": "t23",
-      "advice": "Congratulations!!!!"
+      "tableId": "t23"
     },
     {
       "id": "g172",
       "name": "Amy Ng",
-      "tableId": "t23",
-      "advice": "Congratulations!!!!"
+      "tableId": "t23"
     },
     {
       "id": "g173",
       "name": "Mabin Mathew",
-      "tableId": "t22",
-      "songRequest": "Still into you-Paramore",
-      "advice": "Sometimes a good hug usually fixes problems"
+      "tableId": "t22"
     },
     {
       "id": "g174",
       "name": "Sandra Salu",
-      "tableId": "t22",
-      "songRequest": "Still into you-Paramore",
-      "advice": "Sometimes a good hug usually fixes problems"
+      "tableId": "t22"
     },
     {
       "id": "g175",
       "name": "Alec Mcburney",
-      "tableId": "t23",
-      "dietaryRestrictions": "Dairy and Nut allergy"
+      "tableId": "t23"
     },
     {
       "id": "g176",
@@ -1314,9 +1225,7 @@
     {
       "id": "g186",
       "name": "Jacqueline Namboira",
-      "tableId": "t9",
-      "dietaryRestrictions": "Pardon me for any stereotyping: Not able to manage super spicy food hehe.",
-      "advice": "Continue to cherish the journey towards the destination which you probably are. Do not be too hard on yourselves :)."
+      "tableId": "t9"
     },
     {
       "id": "g187",
@@ -1356,42 +1265,32 @@
     {
       "id": "g194",
       "name": "Vinod Ramnath",
-      "tableId": "t22",
-      "dietaryRestrictions": "no beef",
-      "songRequest": "Badtameez Dil",
-      "advice": "enjoy it"
+      "tableId": "t22"
     },
     {
       "id": "g195",
       "name": "Sabrina Ramnath",
-      "tableId": "t22",
-      "dietaryRestrictions": "no beef",
-      "songRequest": "Badtameez Dil",
-      "advice": "enjoy it"
+      "tableId": "t22"
     },
     {
       "id": "g196",
       "name": "Golam Rasul",
-      "tableId": "t25",
-      "dietaryRestrictions": "Halal"
+      "tableId": "t25"
     },
     {
       "id": "g197",
       "name": "Sanjida Pervin",
-      "tableId": "t25",
-      "dietaryRestrictions": "Halal"
+      "tableId": "t25"
     },
     {
       "id": "g198",
       "name": "Farin Rasul",
-      "tableId": "t25",
-      "dietaryRestrictions": "Halal"
+      "tableId": "t25"
     },
     {
       "id": "g199",
       "name": "Faizah Rasul",
-      "tableId": "t25",
-      "dietaryRestrictions": "Halal"
+      "tableId": "t25"
     },
     {
       "id": "g200",
@@ -1406,8 +1305,7 @@
     {
       "id": "g202",
       "name": "Ali Rayaan",
-      "tableId": "t22",
-      "dietaryRestrictions": "Halal"
+      "tableId": "t22"
     },
     {
       "id": "g203",
@@ -1497,14 +1395,12 @@
     {
       "id": "g220",
       "name": "Abid Shirazi",
-      "tableId": "t34",
-      "dietaryRestrictions": "halal"
+      "tableId": "t34"
     },
     {
       "id": "g221",
       "name": "Farah Shirazi",
-      "tableId": "t34",
-      "dietaryRestrictions": "halal"
+      "tableId": "t34"
     },
     {
       "id": "g222",
@@ -1524,14 +1420,12 @@
     {
       "id": "g225",
       "name": "Anjalie Singh",
-      "tableId": "t20",
-      "dietaryRestrictions": "No beef no pork"
+      "tableId": "t20"
     },
     {
       "id": "g226",
       "name": "Prabhjot Brar",
-      "tableId": "t20",
-      "dietaryRestrictions": "No beef no pork"
+      "tableId": "t20"
     },
     {
       "id": "g227",
@@ -1546,16 +1440,12 @@
     {
       "id": "g229",
       "name": "Prassana Siva",
-      "tableId": "t21",
-      "songRequest": "EoO by Bad Bunny",
-      "advice": "Your wife is right, especially when she’s not"
+      "tableId": "t21"
     },
     {
       "id": "g230",
       "name": "Kathy Dao",
-      "tableId": "t21",
-      "songRequest": "EoO by Bad Bunny",
-      "advice": "Your wife is right, especially when she’s not"
+      "tableId": "t21"
     },
     {
       "id": "g231",
@@ -1600,22 +1490,17 @@
     {
       "id": "g239",
       "name": "Prateek Tailor",
-      "tableId": "t21",
-      "dietaryRestrictions": "No beef"
+      "tableId": "t21"
     },
     {
       "id": "g240",
       "name": "Tara Tailor",
-      "tableId": "t21",
-      "dietaryRestrictions": "No beef"
+      "tableId": "t21"
     },
     {
       "id": "g241",
       "name": "Tom Tang",
-      "tableId": "t23",
-      "dietaryRestrictions": "Less carbs please",
-      "songRequest": "Taylor Swift",
-      "advice": "Communication"
+      "tableId": "t23"
     },
     {
       "id": "g242",
@@ -1635,20 +1520,17 @@
     {
       "id": "g245",
       "name": "William Tien",
-      "tableId": "t19",
-      "dietaryRestrictions": "Nuts"
+      "tableId": "t19"
     },
     {
       "id": "g246",
       "name": "Arun Tyagi",
-      "tableId": "t22",
-      "dietaryRestrictions": "Gluten allergy"
+      "tableId": "t22"
     },
     {
       "id": "g247",
       "name": "Priya Dhanoa",
-      "tableId": "t22",
-      "dietaryRestrictions": "Gluten allergy"
+      "tableId": "t22"
     },
     {
       "id": "g248",
@@ -1763,8 +1645,7 @@
     {
       "id": "g275",
       "name": "Haiyi (Ellie) Zhou",
-      "tableId": "t9",
-      "advice": "A couple that lifts together sticks together ᕙ(  •̀ ᗜ •́  )ᕗ"
+      "tableId": "t9"
     },
     {
       "id": "g276",

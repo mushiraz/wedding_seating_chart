@@ -1,129 +1,163 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { EventData, Table } from "@/lib/types";
-import { findGuests, isHeadTable, tableNumber, tableTitle, tablesInOrder } from "@/lib/tableDisplay";
+import { useMemo, useRef, useState } from "react";
+import { EventData } from "@/lib/types";
+import { findGuests, tableArea, tableNumber, tableTitle, tablesInOrder } from "@/lib/tableDisplay";
 import RoomMap from "./RoomMap";
 
-interface SeatFinderProps {
-  data: EventData;
-}
+const SHOWN = 8;
 
-export default function SeatFinder({ data }: SeatFinderProps) {
+export default function SeatFinder({ data }: { data: EventData }) {
   const [query, setQuery] = useState("");
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-  const ordered = useMemo(() => tablesInOrder(data.tables), [data.tables]);
-  const front = ordered.filter((table) => !isHeadTable(table) && !/vendor/i.test(table.label) && table.y < 50);
-  const back = ordered.filter((table) => !isHeadTable(table) && (table.y >= 50 || /vendor/i.test(table.label)));
-  const heads = ordered.filter((table) => isHeadTable(table));
+  const [picked, setPicked] = useState<{ tableId: string; guestId?: string } | null>(null);
+  const roomRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
+  const ordered = useMemo(() => tablesInOrder(data.tables), [data.tables]);
+  const tableById = useMemo(() => new Map(data.tables.map((table) => [table.id, table])), [data.tables]);
   const matches = useMemo(() => findGuests(data.guests, query), [data.guests, query]);
-  const specificMatch = matches.length === 1 || query.trim().split(/\s+/).filter(Boolean).length >= 2;
   const matchTableIds = new Set(matches.map((guest) => guest.tableId).filter(Boolean));
 
-  const activeId =
-    selectedId ??
-    (query.trim() && matchTableIds.size === 1 ? [...matchTableIds][0] : null);
-
-  const activeTable = data.tables.find((table) => table.id === activeId) ?? null;
+  // Typing narrows to one table on its own; tapping always wins.
+  const activeId = picked?.tableId ?? (matchTableIds.size === 1 ? [...matchTableIds][0] : null);
+  const activeTable = activeId ? tableById.get(activeId) ?? null : null;
+  const highlighted = new Set(picked?.guestId ? [picked.guestId] : matches.map((guest) => guest.id));
   const seatedHere = activeTable
     ? data.guests.filter((guest) => guest.tableId === activeTable.id).sort((a, b) => a.name.localeCompare(b.name))
     : [];
-  const matchedNames = new Set(matches.map((guest) => guest.id));
 
-  function choose(tableId: string) {
-    setSelectedId(tableId);
+  function choose(tableId: string, guestId?: string) {
+    setPicked({ tableId, guestId });
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    requestAnimationFrame(() => roomRef.current?.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" }));
   }
 
   return (
-    <section id="find" className="scroll-mt-20">
-      <div className="max-w-3xl mx-auto">
-        <p className="text-[11px] tracking-[0.28em] uppercase text-[#6a624f]">Your seat</p>
-        <h2 className="font-serif text-4xl text-[#1c2b24] mt-1">Find your name</h2>
-        <p className="mt-2 text-sm text-[#5c564c]">
-          Type your name. Your table number lights up on the plan below.
-        </p>
-        <label htmlFor="seat-search" className="sr-only">
-          Search for your name
-        </label>
-        <input
-          id="seat-search"
-          value={query}
-          onChange={(event) => {
-            setQuery(event.target.value);
-            setSelectedId(null);
-          }}
-          placeholder="First or last name"
-          autoComplete="off"
-          enterKeyHint="search"
-          className="mt-5 w-full rounded-full border border-[#d9d0c2] bg-white px-5 py-3.5 text-base text-[#1c2b24] placeholder:text-[#8c8578] shadow-sm outline-none focus:border-[#3d5c3d] focus:ring-2 focus:ring-[#3d5c3d]/20"
-        />
+    <section id="find" className="max-w-xl mx-auto">
+      <div className="rounded-3xl border border-line bg-paper p-5 sm:p-6 shadow-[0_1px_2px_rgba(28,43,36,0.04),0_12px_32px_-12px_rgba(28,43,36,0.18)]">
+        <h2 className="font-serif text-3xl sm:text-4xl leading-tight">Find your seat</h2>
+        <p className="mt-1 text-sm text-soft">Type any part of your name: first, middle, or last.</p>
 
-        <div aria-live="polite" className="mt-4">
+        <div className="relative mt-4">
+          <svg aria-hidden className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-label" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+            <path strokeLinecap="round" d="m21 21-4.3-4.3M17 10.5a6.5 6.5 0 1 1-13 0 6.5 6.5 0 0 1 13 0Z" />
+          </svg>
+          <label htmlFor="seat-search" className="sr-only">Your name</label>
+          <input
+            ref={inputRef}
+            id="seat-search"
+            type="search"
+            value={query}
+            onChange={(event) => {
+              setQuery(event.target.value);
+              setPicked(null);
+            }}
+            placeholder="Your name"
+            autoComplete="off"
+            autoCorrect="off"
+            autoCapitalize="words"
+            spellCheck={false}
+            enterKeyHint="search"
+            className="w-full rounded-2xl border border-line bg-white py-4 pl-12 pr-12 text-lg text-ink placeholder:text-[#a59d8f] outline-none transition focus:border-sage focus:ring-4 focus:ring-sage/15"
+          />
+          {query && (
+            <button
+              type="button"
+              aria-label="Clear search"
+              onClick={() => {
+                setQuery("");
+                setPicked(null);
+                inputRef.current?.focus();
+              }}
+              className="absolute right-2 top-1/2 grid h-10 w-10 -translate-y-1/2 place-items-center rounded-full text-label hover:bg-cream"
+            >
+              <svg aria-hidden className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2.2} viewBox="0 0 24 24">
+                <path strokeLinecap="round" d="M6 6l12 12M18 6 6 18" />
+              </svg>
+            </button>
+          )}
+        </div>
+
+        <div aria-live="polite">
           {query.trim() && matches.length === 0 && (
-            <p className="rounded-2xl border border-[#e4dccb] bg-white px-4 py-3 text-sm text-[#3f4a42]">
-              No guest matches {query.trim()}. Try a first name, then a last name. If you still do not appear, ask someone from either family.
+            <p className="mt-4 rounded-2xl bg-cream px-4 py-3 text-sm text-body">
+              No one matches &ldquo;{query.trim()}&rdquo;. Try just your first or last name. Still nothing? Ask anyone from either family and they will walk you to your seat.
             </p>
           )}
           {matches.length > 0 && (
-            <ul className="space-y-2">
-              {matches.slice(0, 6).map((guest) => {
-                const table = data.tables.find((item) => item.id === guest.tableId);
-                const note = kitchenNote(guest.dietaryRestrictions, specificMatch);
+            <ul className="mt-4 divide-y divide-line overflow-hidden rounded-2xl border border-line bg-white">
+              {matches.slice(0, SHOWN).map((guest) => {
+                const table = tableById.get(guest.tableId);
+                const active = picked?.guestId === guest.id;
                 return (
                   <li key={guest.id}>
                     <button
                       type="button"
-                      onClick={() => guest.tableId && choose(guest.tableId)}
-                      className="w-full rounded-2xl border border-[#e4dccb] bg-white px-4 py-3 text-left shadow-sm hover:border-[#3d5c3d]"
+                      disabled={!table}
+                      onClick={() => table && choose(table.id, guest.id)}
+                      className={`flex w-full items-center gap-3 px-4 py-3 text-left transition-colors ${active ? "bg-sage-tint" : "hover:bg-cream/70"}`}
                     >
-                      <span className="block font-medium text-[#1c2b24]">{guest.name}</span>
-                      <span className="mt-1 block font-serif text-2xl text-[#3d5c3d]">
-                        {table ? tableTitle(table) : "No table assigned yet"}
+                      <span className="flex-1 min-w-0">
+                        <span className="block truncate font-medium text-ink">{guest.name}</span>
+                        <span className="block text-[13px] text-soft">
+                          {table ? tableTitle(table) : "Table to be confirmed at the door"}
+                        </span>
                       </span>
-                      {note && (
-                        <span className="mt-1 block text-[13px] text-[#5c564c]">Kitchen note: {note}</span>
+                      {table && (
+                        <span className="grid h-12 min-w-12 shrink-0 place-items-center rounded-xl bg-sage px-2 text-xl font-bold text-cream tabular-nums">
+                          {tableNumber(table)}
+                        </span>
                       )}
                     </button>
                   </li>
                 );
               })}
-              {matches.length > 6 && (
-                <li className="text-sm text-[#5c564c]">Keep typing. {matches.length - 6} more names match.</li>
+              {matches.length > SHOWN && (
+                <li className="px-4 py-2.5 text-[13px] text-soft">
+                  {matches.length - SHOWN} more. Add your last name to narrow it down.
+                </li>
               )}
             </ul>
           )}
         </div>
       </div>
 
-      <div id="room" className="scroll-mt-20 max-w-5xl mx-auto mt-10">
-        <p className="text-[11px] tracking-[0.28em] uppercase text-[#6a624f]">The room</p>
-        <h2 className="font-serif text-4xl text-[#1c2b24] mt-1 mb-4">Where the tables are</h2>
-        <RoomMap
-          tables={data.tables}
-          fixtures={data.fixtures ?? []}
-          selectedId={activeId}
-          onSelect={choose}
-        />
+      <div ref={roomRef} id="room" className="mt-6 scroll-mt-16 rounded-3xl border border-line bg-paper p-4 sm:p-6 shadow-[0_1px_2px_rgba(28,43,36,0.04)]">
+        {activeTable ? (
+          <div key={activeTable.id} className="animate-fade-in-up flex items-start gap-4 px-1">
+            <span className="grid h-16 min-w-16 shrink-0 place-items-center rounded-2xl bg-sage px-2 text-3xl font-bold text-cream tabular-nums">
+              {tableNumber(activeTable)}
+            </span>
+            <div className="min-w-0 pt-0.5">
+              <p className="font-serif text-3xl leading-tight">{tableTitle(activeTable)}</p>
+              <p className="text-sm text-soft">{tableArea(activeTable)}</p>
+            </div>
+          </div>
+        ) : (
+          <div className="px-1">
+            <p className="font-serif text-3xl leading-tight">The room</p>
+            <p className="text-sm text-soft">Search your name above, or tap any table to see who is sitting there.</p>
+          </div>
+        )}
 
-        <div className="mt-6 space-y-4">
-          <TableChips label="Front of the room" tables={front} activeId={activeId} onSelect={choose} />
-          <TableChips label="Head tables" tables={heads} activeId={activeId} onSelect={choose} />
-          <TableChips label="Back of the room" tables={back} activeId={activeId} onSelect={choose} />
+        <div className="mt-4">
+          <RoomMap tables={data.tables} fixtures={data.fixtures ?? []} selectedId={activeId} onSelect={(id) => setPicked({ tableId: id })} />
+          <p className="mt-2 px-1 text-xs text-label">Entrance at the top. H1 to H4 are the head tables, V is the vendor table.</p>
         </div>
 
         {activeTable && (
-          <div className="mt-6 rounded-2xl border border-[#e4dccb] bg-white p-5 shadow-sm">
-            <p className="text-[11px] tracking-[0.22em] uppercase text-[#6a624f]">Seated here</p>
-            <h3 className="font-serif text-3xl text-[#1c2b24]">{tableTitle(activeTable)}</h3>
+          <div className="mt-5 border-t border-line pt-4 px-1">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-label">
+              At this table · {seatedHere.length}
+            </p>
             {seatedHere.length === 0 ? (
-              <p className="mt-2 text-sm text-[#5c564c]">No guests are assigned to this table.</p>
+              <p className="mt-2 text-sm text-soft">No one is seated here.</p>
             ) : (
-              <ul className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1">
+              <ul className="mt-2 grid grid-cols-1 gap-x-6 sm:grid-cols-2">
                 {seatedHere.map((guest) => (
                   <li
                     key={guest.id}
-                    className={matchedNames.has(guest.id) ? "font-semibold text-[#3d5c3d]" : "text-[#1c2b24]"}
+                    className={`py-1 ${query.trim() && highlighted.has(guest.id) ? "font-semibold text-sage" : "text-ink"}`}
                   >
                     {guest.name}
                   </li>
@@ -132,53 +166,30 @@ export default function SeatFinder({ data }: SeatFinderProps) {
             )}
           </div>
         )}
+
+        <div className="mt-5 border-t border-line pt-4">
+          <p className="px-1 text-xs font-semibold uppercase tracking-[0.18em] text-label">All tables</p>
+          <div className="mt-3 grid grid-cols-6 sm:grid-cols-9 gap-2">
+            {ordered.map((table) => {
+              const active = table.id === activeId;
+              return (
+                <button
+                  key={table.id}
+                  type="button"
+                  aria-pressed={active}
+                  aria-label={tableTitle(table)}
+                  onClick={() => choose(table.id)}
+                  className={`h-11 rounded-xl border text-[15px] font-semibold tabular-nums transition-colors ${
+                    active ? "border-sage bg-sage text-cream" : "border-line bg-white text-ink hover:border-sage"
+                  }`}
+                >
+                  {tableNumber(table)}
+                </button>
+              );
+            })}
+          </div>
+        </div>
       </div>
     </section>
-  );
-}
-
-function kitchenNote(note: string | undefined, specific: boolean): string | null {
-  if (!specific || !note) return null;
-  const text = note.trim();
-  if (!text || /^halal$/i.test(text)) return null;
-  return text;
-}
-
-function TableChips({
-  label,
-  tables,
-  activeId,
-  onSelect,
-}: {
-  label: string;
-  tables: Table[];
-  activeId: string | null;
-  onSelect: (id: string) => void;
-}) {
-  return (
-    <div>
-      <p className="text-[11px] tracking-[0.18em] uppercase text-[#6a624f] mb-2">{label}</p>
-      <div className="flex flex-wrap gap-2">
-        {tables.map((table) => {
-          const active = table.id === activeId;
-          return (
-            <button
-              key={table.id}
-              type="button"
-              aria-pressed={active}
-              aria-label={tableTitle(table)}
-              onClick={() => onSelect(table.id)}
-              className={`min-w-11 rounded-full px-3 py-1.5 text-sm border ${
-                active
-                  ? "bg-[#3d5c3d] text-[#f6f1e7] border-[#3d5c3d]"
-                  : "bg-white text-[#1c2b24] border-[#d9d0c2] hover:border-[#3d5c3d]"
-              }`}
-            >
-              {tableNumber(table)}
-            </button>
-          );
-        })}
-      </div>
-    </div>
   );
 }
