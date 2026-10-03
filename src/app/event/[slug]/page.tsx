@@ -14,6 +14,7 @@ import GuestGrid from "@/components/GuestGrid";
 import FloorPlan from "@/components/FloorPlan";
 import FloorPlanEditor from "@/components/FloorPlanEditor";
 import QRCodeDisplay from "@/components/QRCodeDisplay";
+import VenueGuide from "@/components/guest/VenueGuide";
 
 export default function EventPage() {
   const params = useParams();
@@ -152,6 +153,16 @@ export default function EventPage() {
   }
 
   const tableMap = Object.fromEntries(data.tables.map((t) => [t.id, t]));
+
+  if (slug === "ahad-and-rehnuba" && !editing) {
+    return (
+      <VenueGuide
+        data={data}
+        editUnlocked={editUnlocked}
+        onEdit={() => setEditing(true)}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background flex flex-col">

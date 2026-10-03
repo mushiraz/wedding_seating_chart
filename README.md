@@ -1,6 +1,6 @@
 # Wedding Seating Chart
 
-A beautiful, QR-code-accessible wedding seating chart app. Guests scan a QR code to instantly find their assigned table and seat.
+The guest guide for Ahad and Rehnuba's wedding. A QR code at the venue opens this site: find a seat, see the room, and follow the day.
 
 ## Features
 
@@ -29,15 +29,15 @@ npm install
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) to see the landing page.
+Open [http://localhost:3000](http://localhost:3000) for the guest guide. `/event/ahad-and-rehnuba` shows the same page. Add `?edit=1` to open the seating editor.
 
 ### Quick Demo
 
-Visit `/event/john-sarah-wedding` to see a pre-loaded demo with sample data.
+Visit `/event/john-sarah-wedding` to see a pre-loaded demo with sample data. `/setup` is the organizer wizard.
 
 ### Creating a Seating Chart
 
-1. Click **"Create Your Seating Chart"** on the landing page
+1. Open `/setup`
 2. Enter event details (title, date, optional photo and floor plan background)
 3. Add tables (round or rectangle, set number of seats)
 4. Drag tables into position on the floor plan
@@ -54,7 +54,7 @@ Jane Doe,2
 
 ## Deployment
 
-The site runs as a Cloudflare Worker (`wedding-seating-chart`) on `ahadandrehnuba.com` and `www.ahadandrehnuba.com`. The root path redirects to `/event/ahad-and-rehnuba`.
+The site runs as a Cloudflare Worker (`wedding-seating-chart`) on `ahadandrehnuba.com` and `www.ahadandrehnuba.com`. The root path is the guest guide.
 
 Put `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` in `.env.local` (see `.env.example`), then:
 

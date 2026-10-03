@@ -26,8 +26,8 @@ export default function GuestCard({ guest, table, highlighted, animationDelay = 
         {table?.label || (guest.tableId ? `Table ${guest.tableId}` : "Unassigned")}
       </p>
       {guest.dietaryRestrictions && (
-        <p className="text-amber-600/80 text-[10px] mt-1 truncate" title={guest.dietaryRestrictions}>
-          🍽 {guest.dietaryRestrictions}
+        <p className="text-amber-800/80 text-[10px] mt-1 truncate" title={guest.dietaryRestrictions}>
+          {guest.dietaryRestrictions}
         </p>
       )}
     </div>

@@ -13,11 +13,23 @@
   --color-muted: #8c8578;
   --font-sans: var(--font-inter);
   --font-script: var(--font-great-vibes);
+  --font-serif: var(--font-cormorant), Georgia, serif;
 }
 
 body {
-  background: var(--color-background);
+  background:
+    radial-gradient(ellipse at top, #fbf7ef 0%, #f4efe6 58%, #efe6d8 100%);
   color: var(--color-foreground);
+}
+
+section[id] {
+  scroll-margin-top: 4.5rem;
+}
+
+#room-map g:focus-visible circle,
+#room-map g:focus-visible rect {
+  stroke: #b08948;
+  stroke-width: 0.55px;
 }
 
 .font-script {
@@ -56,6 +68,20 @@ body {
 
 .animate-pulse-ring {
   animation: pulse-ring 2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-in-up,
+  .animate-fade-in,
+  .animate-pulse-ring {
+    animation: none;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
 }
 
 ::-webkit-scrollbar {

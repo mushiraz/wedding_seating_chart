@@ -43,3 +43,6 @@ next-env.d.ts
 /dist/
 .vinext/
 .cloudflare/
+
+# Local research copy of the Zola site. Never commit.
+/zola/
