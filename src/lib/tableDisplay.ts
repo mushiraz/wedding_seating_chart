@@ -25,7 +25,7 @@ export function tableNumber(table: Table): string {
 /** Where the table sits, in words a guest standing at the entrance can use. */
 export function tableArea(table: Table): string {
   if (isHeadTable(table)) return "Beside the dance floor, on the stage side";
-  const half = table.y < 47 ? "Entrance half of the room" : "Bar half of the room";
+  const half = table.y < 47 ? "Top half of the room" : "Bottom half of the room, by the bars";
   const side = table.x < 35 ? "toward the stage" : table.x > 65 ? "toward the DJ" : "in the middle";
   return `${half}, ${side}`;
 }

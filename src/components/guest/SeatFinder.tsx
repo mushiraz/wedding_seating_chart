@@ -142,7 +142,7 @@ export default function SeatFinder({ data }: { data: EventData }) {
 
         <div className="mt-4">
           <RoomMap tables={data.tables} fixtures={data.fixtures ?? []} selectedId={activeId} onSelect={(id) => setPicked({ tableId: id })} />
-          <p className="mt-2 px-1 text-xs text-label">Entrance at the top. H1 to H4 are the head tables, V is the vendor table.</p>
+          <p className="mt-2 px-1 text-xs text-label">Entrances are at the bottom left and on the right. H1 to H4 are the head tables, V is the vendor table.</p>
         </div>
 
         {activeTable && (
