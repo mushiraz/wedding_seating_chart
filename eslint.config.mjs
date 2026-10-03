@@ -16,6 +16,8 @@ const eslintConfig = defineConfig([
     "dist/**",
     ".vinext/**",
     ".cloudflare/**",
+    // Local research copy, gitignored
+    "zola/**",
   ]),
 ]);
 
