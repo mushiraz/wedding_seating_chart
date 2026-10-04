@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node --experimental-strip-types --test src/lib/tableDisplay.test.ts",
+    "test": "node --experimental-strip-types --test src/lib/*.test.ts",
     "dev:vinext": "vite dev --port 3001",
     "build:vinext": "vite build",
     "start:vinext": "vite preview",
@@ -16,6 +16,7 @@
   "dependencies": {
     "@vinext/cloudflare": "^1.0.1",
     "next": "16.2.2",
+    "qrcode.react": "^4.2.0",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
     "react-server-dom-webpack": "^19.3.0",

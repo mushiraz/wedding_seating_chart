@@ -10,6 +10,28 @@ The guest guide for Ahad and Rehnuba's wedding. A QR code at the venue opens thi
 
 `/event/<anything>` serves the same page so older links keep working.
 
+## Photo booth
+
+- **`/photos`**: guests pick their name, share any number of photos from their camera roll, and play the side quests. Each guest gets 8 of the 15 quests in `src/lib/quests.ts`; the first to finish 5 wins. Photos are resized to a 2048px JPEG plus a thumbnail in the browser before upload, which also strips location data.
+- **`/photos/tv`**: full-screen slideshow for the screen in the hall. New uploads play next, everything else cycles. Press "Full screen" once; the page keeps the screen awake.
+- **`/photos/admin`**: leaderboard (ranked by when each guest's fifth quest photo landed), review each player's photos, disqualify or reinstate, and hide any photo from the TV. Sign in with `PHOTO_ADMIN_KEY`.
+
+Storage is an R2 bucket (`PHOTOS`, the images) and a D1 database (`DB`, who uploaded what, quest progress, disqualifications), both named `wedding-photo-booth` in `cloudflare.config.ts`. The tables create themselves on first request.
+
+The API routes read Cloudflare bindings, so work on the photo booth with `npm run dev:vinext` (port 3001, local D1 and R2). Put `PHOTO_ADMIN_KEY=anything` in `.dev.vars` for local admin sign-in.
+
+### One-time setup before the first deploy
+
+1. Enable R2 on the Cloudflare account (dashboard, R2).
+2. Give the API token in `.env.local` **D1 Edit** and **Workers R2 Storage Edit** on top of the Workers permissions.
+3. Create the storage and the admin key:
+
+```bash
+npx cf d1 create wedding-photo-booth
+npx cf r2 buckets create wedding-photo-booth
+npx cf workers secrets put PHOTO_ADMIN_KEY   # the password for /photos/admin
+```
+
 ## Data
 
 - `src/data/ahad-rehnuba.json` holds the tables, room fixtures and guests (`id`, `name`, `tableId` only). It ships to the browser, so keep RSVP notes (dietary, songs, advice) out of it.
@@ -19,7 +41,8 @@ The guest guide for Ahad and Rehnuba's wedding. A QR code at the venue opens thi
 
 ```bash
 npm install
-npm run dev      # Next.js dev server
+npm run dev      # Next.js dev server (seating guide only)
+npm run dev:vinext  # Worker dev server with local D1/R2 (photo booth)
 npm test         # search and table label tests
 ```
 

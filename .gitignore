@@ -46,3 +46,6 @@ next-env.d.ts
 
 # Local research copy of the Zola site. Never commit.
 /zola/
+
+# local Worker secrets
+.dev.vars

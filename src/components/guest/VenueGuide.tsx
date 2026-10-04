@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { EventData } from "@/lib/types";
 import { weddingDay } from "@/data/wedding-day";
 import SeatFinder from "./SeatFinder";
@@ -6,19 +7,22 @@ const links = [
   { href: "#find", label: "Seat" },
   { href: "#today", label: "Schedule" },
   { href: "#know", label: "Details" },
-  { href: "#party", label: "Wedding party" },
+  { href: "#party", label: "Party" },
 ];
 
 export default function VenueGuide({ data }: { data: EventData }) {
   return (
     <div className="min-h-screen text-ink">
       <nav className="sticky top-0 z-20 border-b border-line/80 bg-cream/90 backdrop-blur-md">
-        <div className="max-w-xl mx-auto flex items-center gap-1 overflow-x-auto px-3 py-2 text-sm [scrollbar-width:none]">
+        <div className="max-w-xl mx-auto flex items-center gap-0.5 overflow-x-auto px-2 py-2 text-sm [scrollbar-width:none]">
           {links.map((link) => (
-            <a key={link.href} href={link.href} className="shrink-0 rounded-full px-3 py-1.5 text-body hover:bg-white hover:text-ink">
+            <a key={link.href} href={link.href} className="shrink-0 rounded-full px-2.5 py-1.5 text-body hover:bg-white hover:text-ink">
               {link.label}
             </a>
           ))}
+          <Link href="/photos" className="ml-auto shrink-0 rounded-full bg-sage px-3 py-1.5 font-medium text-cream hover:bg-[#344f34]">
+            Photos
+          </Link>
         </div>
       </nav>
 
@@ -31,6 +35,23 @@ export default function VenueGuide({ data }: { data: EventData }) {
 
       <main className="px-4 pb-20 space-y-14">
         <SeatFinder data={data} />
+
+        <Link
+          href="/photos"
+          className="group mx-auto flex max-w-xl items-center gap-4 rounded-3xl border border-line bg-paper p-5 shadow-[0_1px_2px_rgba(28,43,36,0.04)] transition hover:border-sage"
+        >
+          <span aria-hidden className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-sage text-cream">
+            <svg className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3 9a2 2 0 012-2h1.6a2 2 0 001.7-.9l.8-1.2A2 2 0 0110.8 4h2.4a2 2 0 011.7.9l.8 1.2a2 2 0 001.7.9H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+              <circle cx="12" cy="13" r="3.5" />
+            </svg>
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block font-serif text-2xl leading-tight">Photo booth</span>
+            <span className="block text-sm text-soft">Put your photos on the big screen, and play the side quests. First to finish 5 wins a prize.</span>
+          </span>
+          <span aria-hidden className="text-xl text-label transition group-hover:translate-x-0.5">&rarr;</span>
+        </Link>
 
         <section id="today" className="max-w-xl mx-auto">
           <SectionTitle>Schedule</SectionTitle>
