@@ -27,9 +27,11 @@ The API routes read Cloudflare bindings, so work on the photo booth with `npm ru
 3. Create the storage and the admin key:
 
 ```bash
-npx cf d1 create wedding-photo-booth
-npx cf r2 buckets create wedding-photo-booth
-npx cf workers secrets put PHOTO_ADMIN_KEY   # the password for /photos/admin
+npx cf d1 create --name wedding-photo-booth
+npx cf r2 buckets create --name wedding-photo-booth
+# the password for /photos/admin
+npx cf workers secrets update PHOTO_ADMIN_KEY --worker wedding-seating-chart --type secret_text --text '<password>'
+npm run deploy:vinext
 ```
 
 ## Data
