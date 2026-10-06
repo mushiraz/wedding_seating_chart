@@ -16,19 +16,18 @@ The guest guide for Ahad and Rehnuba's wedding. A QR code at the venue opens thi
 - **`/photos/tv`**: full-screen slideshow for the screen in the hall. New uploads play next, everything else cycles. Press "Full screen" once; the page keeps the screen awake.
 - **`/photos/admin`**: leaderboard (ranked by when each guest's fifth quest photo landed), review each player's photos, disqualify or reinstate, and hide any photo from the TV. Sign in with `PHOTO_ADMIN_KEY`.
 
-Storage is an R2 bucket (`PHOTOS`, the images) and a D1 database (`DB`, who uploaded what, quest progress, disqualifications), both named `wedding-photo-booth` in `cloudflare.config.ts`. The tables create themselves on first request.
+Storage is the R2 bucket `ahadwedding` (`PHOTOS`, the images) and the D1 database `wedding-photo-booth` (`DB`, who uploaded what, quest progress, disqualifications), set in `cloudflare.config.ts`. The bucket stays private: the Worker serves the images, so hidden photos stay hidden. The tables create themselves on first request.
 
 The API routes read Cloudflare bindings, so work on the photo booth with `npm run dev:vinext` (port 3001, local D1 and R2). Put `PHOTO_ADMIN_KEY=anything` in `.dev.vars` for local admin sign-in.
 
 ### One-time setup before the first deploy
 
-1. Enable R2 on the Cloudflare account (dashboard, R2).
+1. Enable R2 and create the `ahadwedding` bucket (done).
 2. Give the API token in `.env.local` **D1 Edit** and **Workers R2 Storage Edit** on top of the Workers permissions.
 3. Create the storage and the admin key:
 
 ```bash
 npx cf d1 create --name wedding-photo-booth
-npx cf r2 buckets create --name wedding-photo-booth
 # the password for /photos/admin
 npx cf workers secrets update PHOTO_ADMIN_KEY --worker wedding-seating-chart --type secret_text --text '<password>'
 npm run deploy:vinext

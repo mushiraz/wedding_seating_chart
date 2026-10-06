@@ -15,7 +15,7 @@ export default defineConfig({
       ASSETS: bindings.assets(),
       IMAGES: bindings.images(),
       // Photo booth: originals in R2, metadata and quest progress in D1.
-      PHOTOS: bindings.r2({ name: "wedding-photo-booth" }),
+      PHOTOS: bindings.r2({ name: "ahadwedding" }),
       DB: bindings.d1({ name: "wedding-photo-booth" }),
       PHOTO_ADMIN_KEY: bindings.secret(),
     },
