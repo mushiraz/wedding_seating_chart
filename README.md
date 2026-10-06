@@ -23,11 +23,10 @@ The API routes read Cloudflare bindings, so work on the photo booth with `npm ru
 ### One-time setup before the first deploy
 
 1. Enable R2 and create the `ahadwedding` bucket (done).
-2. Give the API token in `.env.local` **D1 Edit** and **Workers R2 Storage Edit** on top of the Workers permissions.
-3. Create the storage and the admin key:
+2. Give the API token in `.env.local` **D1 Edit** and **Workers R2 Storage Edit** on top of the Workers permissions (done).
+3. Create the database (done, id pinned in `cloudflare.config.ts`) and set the admin key:
 
 ```bash
-npx cf d1 create --name wedding-photo-booth
 # the password for /photos/admin
 npx cf workers secrets update PHOTO_ADMIN_KEY --worker wedding-seating-chart --type secret_text --text '<password>'
 npm run deploy:vinext
