@@ -52,6 +52,7 @@ export function db(): D1Database {
       guest_id TEXT PRIMARY KEY,
       created_at INTEGER NOT NULL
     )`),
+    env.DB.prepare("CREATE TABLE IF NOT EXISTS failed_logins (ip TEXT NOT NULL, at INTEGER NOT NULL)"),
   ]).catch((error) => {
     schema = null;
     throw error;
@@ -119,6 +120,27 @@ export const ADMIN_COOKIE = "pb_admin";
 export async function adminToken(): Promise<string | null> {
   const key = env.PHOTO_ADMIN_KEY;
   return key ? sha256(`photo-booth-admin:${key}`) : null;
+}
+
+const LOCKOUT_TRIES = 10;
+const LOCKOUT_MS = 15 * 60 * 1000;
+
+/** True when this connection has used up its wrong guesses; the admin key can be short. */
+export async function lockedOut(ip: string): Promise<boolean> {
+  const database = await ready();
+  const row = await database
+    .prepare("SELECT count(*) AS n FROM failed_logins WHERE ip = ? AND at > ?")
+    .bind(ip, Date.now() - LOCKOUT_MS)
+    .first<{ n: number }>();
+  return (row?.n ?? 0) >= LOCKOUT_TRIES;
+}
+
+export async function recordFailedLogin(ip: string): Promise<void> {
+  const database = await ready();
+  await database.batch([
+    database.prepare("INSERT INTO failed_logins (ip, at) VALUES (?, ?)").bind(ip, Date.now()),
+    database.prepare("DELETE FROM failed_logins WHERE at < ?").bind(Date.now() - LOCKOUT_MS),
+  ]);
 }
 
 export async function keyMatches(candidate: string): Promise<boolean> {
