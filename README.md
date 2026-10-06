@@ -43,7 +43,8 @@ npm run deploy:vinext
 npm install
 npm run dev      # Next.js dev server (seating guide only)
 npm run dev:vinext  # Worker dev server with local D1/R2 (photo booth)
-npm test         # search and table label tests
+npm test         # search, table label, quest and leaderboard tests
+npm run build    # the Worker build that deploys (vinext)
 ```
 
 ## Deployment

@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
+    "build": "vite build",
+    "start": "vite preview",
     "lint": "eslint",
     "test": "node --experimental-strip-types --test src/lib/*.test.ts",
     "dev:vinext": "vite dev --port 3001",
