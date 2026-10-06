@@ -16,6 +16,7 @@ export interface PhotoRow {
 export interface PublicPhoto {
   id: string;
   name: string | null;
+  questId: string | null;
   quest: string | null;
   width: number;
   height: number;
@@ -70,6 +71,7 @@ export function toPublic(row: PhotoRow): PublicPhoto {
   return {
     id: row.id,
     name: guestName(row.guest_id),
+    questId: row.quest_id,
     quest: row.quest_id ? questById(row.quest_id)?.title ?? null : null,
     width: row.width,
     height: row.height,
