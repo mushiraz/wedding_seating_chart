@@ -56,7 +56,7 @@ export default function PhotoBooth({ initialTab = "upload" }: { initialTab?: Tab
 
         <div className="mt-6 space-y-6" role="tabpanel">
           {tab === "upload" ? (
-            <BulkUpload guest={guest} setGuest={setGuest} />
+            <BulkUpload />
           ) : guest ? (
             <QuestBoard key={guest.id} guest={guest} setGuest={setGuest} />
           ) : (
@@ -154,10 +154,10 @@ function TabButton({
   );
 }
 
-/** Who is sharing: optional for uploads, required for quests. */
-function SharingAs({ guest, setGuest, optional }: { guest: Guest | null; setGuest: (guest: Guest | null) => void; optional?: boolean }) {
+/** Who is playing the quests. */
+function SharingAs({ guest, setGuest }: { guest: Guest; setGuest: (guest: Guest | null) => void }) {
   const [picking, setPicking] = useState(false);
-  if (picking || (!guest && !optional)) {
+  if (picking) {
     return (
       <div className="rounded-2xl border border-line bg-white p-4">
         <GuestPicker
@@ -166,7 +166,6 @@ function SharingAs({ guest, setGuest, optional }: { guest: Guest | null; setGues
             setPicking(false);
           }}
           onCancel={() => setPicking(false)}
-          optional={optional}
         />
       </div>
     );
@@ -174,31 +173,25 @@ function SharingAs({ guest, setGuest, optional }: { guest: Guest | null; setGues
   return (
     <div className="flex items-center justify-between gap-3 rounded-2xl bg-cream px-4 py-3">
       <p className="min-w-0 truncate text-sm">
-        {guest ? (
-          <>
-            Sharing as <strong className="font-semibold">{guest.name}</strong>
-          </>
-        ) : (
-          <span className="text-body">Add your name (optional)</span>
-        )}
+        Playing as <strong className="font-semibold">{guest.name}</strong>
       </p>
       <button type="button" onClick={() => setPicking(true)} className="shrink-0 text-sm font-semibold text-sage underline underline-offset-4">
-        {guest ? "Change" : "Add name"}
+        Not you?
       </button>
     </div>
   );
 }
 
-function GuestPicker({ onPick, onCancel, optional }: { onPick: (guest: Guest) => void; onCancel?: () => void; optional?: boolean }) {
+function GuestPicker({ onPick, onCancel }: { onPick: (guest: Guest) => void; onCancel?: () => void }) {
   const [query, setQuery] = useState("");
   const matches = useMemo(() => findGuests(allGuests, query).slice(0, 6), [query]);
   return (
     <div>
       <label htmlFor="guest-search" className="font-serif text-2xl leading-tight">
-        {optional ? "Your name" : "Who are you?"}
+        Who are you?
       </label>
       <p className="mt-1 text-sm text-soft">
-        {optional ? "It shows under your photos on the screen." : "Your quests are picked for you, and your name goes on the leaderboard."}
+        Your quests are picked for you, and your name goes on the leaderboard.
       </p>
       <input
         id="guest-search"
@@ -241,7 +234,7 @@ interface Item {
   error?: string;
 }
 
-function BulkUpload({ guest, setGuest }: { guest: Guest | null; setGuest: (guest: Guest | null) => void }) {
+function BulkUpload() {
   const [items, setItems] = useState<Item[]>([]);
   const [dragging, setDragging] = useState(false);
   const files = useRef(new Map<string, File>());
@@ -258,7 +251,8 @@ function BulkUpload({ guest, setGuest }: { guest: Guest | null; setGuest: (guest
         const key = keys[next++];
         patch(key, { status: "uploading", error: undefined });
         try {
-          const id = await uploadPhoto(files.current.get(key)!, { guestId: guest?.id });
+          // Uploads are anonymous; names are only for quests, so the couple knows who won.
+          const id = await uploadPhoto(files.current.get(key)!, {});
           files.current.delete(key);
           patch(key, { status: "done", id });
         } catch (error) {
@@ -289,9 +283,6 @@ function BulkUpload({ guest, setGuest }: { guest: Guest | null; setGuest: (guest
     <section className={card} aria-labelledby="share">
       <h2 id="share" className="font-serif text-3xl leading-tight">Upload photos</h2>
       <p className="mt-1 text-sm text-soft">Select as many as you like at once. They go straight to the screen.</p>
-      <div className="mt-4">
-        <SharingAs guest={guest} setGuest={setGuest} optional />
-      </div>
       <input
         ref={input}
         type="file"
