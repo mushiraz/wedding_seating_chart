@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Guest } from "@/lib/types";
+import type { PublicPhoto } from "@/lib/photoStore";
 import { findGuests } from "@/lib/tableDisplay";
 import { QUESTS_PER_GUEST, QUESTS_TO_WIN, questsFor, type Quest } from "@/lib/quests";
 import { photoUrl, uploadPhoto } from "@/lib/uploadPhoto";
@@ -42,6 +43,8 @@ export default function PhotoBooth({ initialTab = "upload" }: { initialTab?: Tab
       </header>
 
       <main className="px-4 pb-10 max-w-xl mx-auto">
+        <SeeAllPhotos />
+
         <div role="tablist" aria-label="What would you like to do?" className="grid grid-cols-2 gap-3">
           <TabButton active={tab === "upload"} onClick={() => choose("upload")} title="Upload photos" detail="Add any photos from your phone">
             <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.6-4.6a2 2 0 012.8 0L16 16m-2-2 1.6-1.6a2 2 0 012.8 0L20 14M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2zm8-12h.01" />
@@ -64,17 +67,6 @@ export default function PhotoBooth({ initialTab = "upload" }: { initialTab?: Tab
               </div>
             </section>
           )}
-
-          <Link
-            href="/photos/all"
-            className="flex items-center justify-between rounded-3xl border border-line bg-paper px-5 py-4 transition hover:border-sage"
-          >
-            <span>
-              <span className="block font-serif text-2xl leading-tight">See all photos</span>
-              <span className="block text-sm text-soft">Everything guests have shared tonight</span>
-            </span>
-            <span aria-hidden className="text-xl text-label">&rarr;</span>
-          </Link>
         </div>
       </main>
 
@@ -84,6 +76,51 @@ export default function PhotoBooth({ initialTab = "upload" }: { initialTab?: Tab
         </Link>
       </footer>
     </div>
+  );
+}
+
+/** The way into the gallery: a strip of the newest photos and the running total. */
+function SeeAllPhotos() {
+  const [photos, setPhotos] = useState<PublicPhoto[] | null>(null);
+  useEffect(() => {
+    let active = true;
+    const load = () =>
+      fetch("/api/photos", { cache: "no-store" })
+        .then((response) => (response.ok ? (response.json() as Promise<{ photos: PublicPhoto[] }>) : null))
+        .then((body) => active && body && setPhotos(body.photos))
+        .catch(() => {});
+    void load();
+    const timer = setInterval(load, 30000);
+    return () => {
+      active = false;
+      clearInterval(timer);
+    };
+  }, []);
+
+  const latest = (photos ?? []).slice(0, 4);
+  return (
+    <Link
+      href="/photos/all"
+      className="mb-5 block rounded-3xl border border-line bg-paper p-4 shadow-[0_1px_2px_rgba(28,43,36,0.04)] transition hover:border-sage"
+    >
+      <span className="flex items-center justify-between gap-3">
+        <span>
+          <span className="block font-serif text-2xl leading-tight">See all photos</span>
+          <span className="block text-sm text-soft tabular-nums">
+            {photos === null ? "Everything guests have shared" : photos.length === 0 ? "Nothing yet. Be the first." : `${photos.length} shared so far. Tap to browse them all.`}
+          </span>
+        </span>
+        <span aria-hidden className="shrink-0 text-xl text-label">&rarr;</span>
+      </span>
+      {latest.length > 0 && (
+        <span className="mt-3 grid grid-cols-4 gap-1.5">
+          {latest.map((photo) => (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img key={photo.id} src={photoUrl(photo.id, "thumb")} alt="" className="aspect-square w-full rounded-lg bg-cream object-cover" />
+          ))}
+        </span>
+      )}
+    </Link>
   );
 }
 

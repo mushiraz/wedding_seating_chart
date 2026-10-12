@@ -1,4 +1,5 @@
-import { guestName, isAdmin, leaderboard, ready, type PhotoRow } from "@/lib/photoStore";
+import { env } from "cloudflare:workers";
+import { guestName, isAdmin, leaderboard, objectKey, ready, type PhotoRow } from "@/lib/photoStore";
 import { questById } from "@/lib/quests";
 
 export const dynamic = "force-dynamic";
@@ -31,7 +32,7 @@ export async function GET(request: Request) {
 }
 
 type Action =
-  | { action: "hide" | "show"; photoId: string }
+  | { action: "hide" | "show" | "delete"; photoId: string }
   | { action: "disqualify" | "reinstate"; guestId: string };
 
 export async function POST(request: Request) {
@@ -52,6 +53,14 @@ export async function POST(request: Request) {
         .bind(String(body.guestId), Date.now())
         .run();
       break;
+    case "delete": {
+      // Permanent: the files go first, so a failure leaves a row the admin can retry, never an orphaned image.
+      const id = String(body.photoId);
+      if (!/^[0-9a-f-]{36}$/.test(id)) return Response.json({ error: "Bad photo id." }, { status: 400 });
+      await env.PHOTOS.delete([objectKey(id, "full"), objectKey(id, "thumb")]);
+      await database.prepare("DELETE FROM photos WHERE id = ?").bind(id).run();
+      break;
+    }
     case "reinstate":
       await database.prepare("DELETE FROM disqualified WHERE guest_id = ?").bind(String(body.guestId)).run();
       break;

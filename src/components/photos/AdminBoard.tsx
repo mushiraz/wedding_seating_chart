@@ -258,7 +258,7 @@ function PhotoGrid({ photos, hidden, act }: { photos: AdminPhoto[]; hidden: numb
       {shown.length === 0 ? (
         <p className="text-soft">Nothing here yet.</p>
       ) : (
-        <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+        <ul className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-5">
           {shown.map((photo) => (
             <PhotoTile key={photo.id} photo={photo} act={act} />
           ))}
@@ -280,18 +280,33 @@ function PhotoTile({ photo, act }: { photo: AdminPhoto; act: (body: object) => P
         <p className="truncate font-semibold">{photo.name ?? "Anonymous"}</p>
         <p className="truncate text-soft">{photo.questId ? questById(photo.questId)?.title ?? photo.quest : "Shared photo"}</p>
         <p className="text-soft tabular-nums">{time(photo.at)}</p>
-        <button
-          type="button"
-          disabled={busy}
-          onClick={async () => {
-            setBusy(true);
-            await act({ action: photo.hidden ? "show" : "hide", photoId: photo.id });
-            setBusy(false);
-          }}
-          className={`${pill} mt-2 w-full ${photo.hidden ? "border-sage text-sage" : "border-[#d8b4ac] text-[#9a3b2e]"} bg-white`}
-        >
-          {photo.hidden ? "Show again" : "Hide from TV"}
-        </button>
+        <div className="mt-2 grid grid-cols-2 gap-1.5">
+          <button
+            type="button"
+            disabled={busy}
+            onClick={async () => {
+              setBusy(true);
+              await act({ action: photo.hidden ? "show" : "hide", photoId: photo.id });
+              setBusy(false);
+            }}
+            className={`${pill} ${photo.hidden ? "border-sage text-sage" : "border-line text-body"} bg-white px-2`}
+          >
+            {photo.hidden ? "Show" : "Hide"}
+          </button>
+          <button
+            type="button"
+            disabled={busy}
+            onClick={async () => {
+              if (!window.confirm("Delete this photo for good? It disappears from the screen, the gallery and the quests.")) return;
+              setBusy(true);
+              await act({ action: "delete", photoId: photo.id });
+              setBusy(false);
+            }}
+            className={`${pill} border-[#9a3b2e] bg-[#9a3b2e] px-2 text-white hover:bg-[#7f2f24]`}
+          >
+            Delete
+          </button>
+        </div>
       </div>
     </li>
   );
