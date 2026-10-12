@@ -1,7 +1,6 @@
 export interface Quest {
   id: string;
   title: string;
-  hint: string;
 }
 
 /** Photos needed to finish the game. */
@@ -10,21 +9,21 @@ export const QUESTS_TO_WIN = 5;
 export const QUESTS_PER_GUEST = 8;
 
 export const QUESTS: Quest[] = [
-  { id: "bride", title: "With the bride", hint: "Catch her between photos." },
-  { id: "groom", title: "With the groom", hint: "He will be easier to find than she is." },
-  { id: "couple", title: "With the bride and groom together", hint: "Both of them, one frame." },
-  { id: "bride-family", title: "With someone from the bride's family", hint: "Parents, siblings, cousins all count." },
-  { id: "groom-family", title: "With someone from the groom's family", hint: "Parents, siblings, cousins all count." },
-  { id: "new-friend", title: "With someone you met today", hint: "Introduce yourself first." },
-  { id: "far-side", title: "With a guest from the other side of the room", hint: "Walk past the dance floor." },
-  { id: "table", title: "Your whole table in one selfie", hint: "Everyone has to be in it." },
-  { id: "wedding-party", title: "With a bridesmaid, groomsman or groomswoman", hint: "The wedding party is listed on the main page." },
-  { id: "elder", title: "With an elder of either family", hint: "Ask nicely." },
-  { id: "dance", title: "On the dance floor", hint: "Mid-move is best." },
-  { id: "cake", title: "With the cake", hint: "Before it gets cut." },
-  { id: "dj", title: "With the DJ", hint: "Request a song while you are there." },
-  { id: "big-group", title: "A group of eight or more", hint: "Count the faces." },
-  { id: "same-colour", title: "With someone wearing your colour", hint: "Same outfit colour, not the same outfit." },
+  { id: "bride", title: "With the bride" },
+  { id: "groom", title: "With the groom" },
+  { id: "couple", title: "With the bride and groom together" },
+  { id: "bride-family", title: "With someone from the bride's family" },
+  { id: "groom-family", title: "With someone from the groom's family" },
+  { id: "new-friend", title: "With someone you met today" },
+  { id: "far-side", title: "With a guest from the other side of the room" },
+  { id: "table", title: "Your whole table in one selfie" },
+  { id: "wedding-party", title: "With a bridesmaid, groomsman or groomswoman" },
+  { id: "elder", title: "With an elder of either family" },
+  { id: "dance", title: "On the dance floor" },
+  { id: "cake", title: "With the cake" },
+  { id: "dj", title: "With the DJ" },
+  { id: "big-group", title: "A group of eight or more" },
+  { id: "same-colour", title: "With someone wearing your colour" },
 ];
 
 const byId = new Map(QUESTS.map((quest) => [quest.id, quest]));

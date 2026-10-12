@@ -10,14 +10,19 @@ import { allGuests, useGuest } from "./useGuest";
 
 const card =
   "rounded-3xl border border-line bg-paper p-5 sm:p-6 shadow-[0_1px_2px_rgba(28,43,36,0.04),0_12px_32px_-12px_rgba(28,43,36,0.18)]";
-const primaryButton =
-  "inline-flex items-center justify-center gap-2 rounded-2xl bg-sage px-5 py-3.5 text-base font-semibold text-cream transition hover:bg-[#344f34] active:scale-[0.99] disabled:opacity-50";
 const secondaryButton =
   "inline-flex items-center justify-center gap-2 rounded-2xl border border-line bg-white px-4 py-3 text-sm font-semibold text-ink transition hover:border-sage disabled:opacity-50";
 
-export default function PhotoBooth() {
+type Tab = "upload" | "quests";
+
+export default function PhotoBooth({ initialTab = "upload" }: { initialTab?: Tab }) {
   const [guest, setGuest] = useGuest();
-  const [picking, setPicking] = useState(false);
+  const [tab, setTab] = useState<Tab>(initialTab);
+
+  function choose(next: Tab) {
+    setTab(next);
+    window.history.replaceState(null, "", next === "quests" ? "?tab=quests" : window.location.pathname);
+  }
 
   return (
     <div className="min-h-screen text-ink">
@@ -36,56 +41,128 @@ export default function PhotoBooth() {
         <p className="mt-2 text-sm text-soft">Every photo you add plays on the screen in the hall.</p>
       </header>
 
-      <main className="px-4 pb-20 space-y-6 max-w-xl mx-auto">
-        <section className={card} aria-labelledby="who">
-          <h2 id="who" className="sr-only">Who is sharing</h2>
-          {guest && !picking ? (
-            <div className="flex items-center justify-between gap-3">
-              <div className="min-w-0">
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-label">Sharing as</p>
-                <p className="truncate font-serif text-2xl">{guest.name}</p>
-              </div>
-              <button type="button" onClick={() => setPicking(true)} className={secondaryButton}>
-                Not you?
-              </button>
-            </div>
+      <main className="px-4 pb-10 max-w-xl mx-auto">
+        <div role="tablist" aria-label="What would you like to do?" className="grid grid-cols-2 gap-3">
+          <TabButton active={tab === "upload"} onClick={() => choose("upload")} title="Upload photos" detail="Add any photos from your phone">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.6-4.6a2 2 0 012.8 0L16 16m-2-2 1.6-1.6a2 2 0 012.8 0L20 14M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2zm8-12h.01" />
+          </TabButton>
+          <TabButton active={tab === "quests"} onClick={() => choose("quests")} title="Side quests" detail={`Photo challenges. First to ${QUESTS_TO_WIN} wins`}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4M7.8 4.7a3.4 3.4 0 001.9-.8 3.4 3.4 0 014.6 0 3.4 3.4 0 001.9.8 3.4 3.4 0 013.1 3.1c.1.7.4 1.4.8 1.9a3.4 3.4 0 010 4.6 3.4 3.4 0 00-.8 1.9 3.4 3.4 0 01-3.1 3.1 3.4 3.4 0 00-1.9.8 3.4 3.4 0 01-4.6 0 3.4 3.4 0 00-1.9-.8 3.4 3.4 0 01-3.1-3.1 3.4 3.4 0 00-.8-1.9 3.4 3.4 0 010-4.6c.4-.5.7-1.2.8-1.9a3.4 3.4 0 013.1-3.1z" />
+          </TabButton>
+        </div>
+
+        <div className="mt-6 space-y-6" role="tabpanel">
+          {tab === "upload" ? (
+            <BulkUpload guest={guest} setGuest={setGuest} />
+          ) : guest ? (
+            <QuestBoard key={guest.id} guest={guest} setGuest={setGuest} />
           ) : (
-            <GuestPicker
-              onPick={(picked) => {
-                setGuest(picked);
-                setPicking(false);
-              }}
-              onCancel={guest ? () => setPicking(false) : undefined}
-            />
+            <section className={card}>
+              <QuestIntro />
+              <div className="mt-5 border-t border-line pt-5">
+                <GuestPicker onPick={setGuest} />
+              </div>
+            </section>
           )}
-        </section>
 
-        <BulkUpload guest={guest} />
-
-        {guest ? (
-          <QuestBoard key={guest.id} guest={guest} />
-        ) : (
-          <section className={card}>
-            <QuestIntro />
-            <p className="mt-4 rounded-2xl bg-cream px-4 py-3 text-sm text-body">
-              Find your name above to get your quests.
-            </p>
-          </section>
-        )}
+          <Link
+            href="/photos/all"
+            className="flex items-center justify-between rounded-3xl border border-line bg-paper px-5 py-4 transition hover:border-sage"
+          >
+            <span>
+              <span className="block font-serif text-2xl leading-tight">See all photos</span>
+              <span className="block text-sm text-soft">Everything guests have shared tonight</span>
+            </span>
+            <span aria-hidden className="text-xl text-label">&rarr;</span>
+          </Link>
+        </div>
       </main>
+
+      <footer className="max-w-xl mx-auto flex justify-end px-4 pb-6">
+        <Link href="/photos/admin" className="px-2 py-1 text-[11px] text-label/40 hover:text-label">
+          Admin
+        </Link>
+      </footer>
     </div>
   );
 }
 
-function GuestPicker({ onPick, onCancel }: { onPick: (guest: Guest) => void; onCancel?: () => void }) {
+function TabButton({
+  active,
+  onClick,
+  title,
+  detail,
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  title: string;
+  detail: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      role="tab"
+      aria-selected={active}
+      onClick={onClick}
+      className={`rounded-3xl border p-4 text-left transition ${active ? "border-sage bg-sage text-cream shadow-[0_12px_28px_-14px_rgba(61,92,61,0.7)]" : "border-line bg-paper text-ink hover:border-sage"}`}
+    >
+      <svg aria-hidden className="h-7 w-7" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+        {children}
+      </svg>
+      <span className="mt-3 block font-serif text-2xl leading-tight">{title}</span>
+      <span className={`mt-0.5 block text-[13px] leading-snug ${active ? "text-cream/80" : "text-soft"}`}>{detail}</span>
+    </button>
+  );
+}
+
+/** Who is sharing: optional for uploads, required for quests. */
+function SharingAs({ guest, setGuest, optional }: { guest: Guest | null; setGuest: (guest: Guest | null) => void; optional?: boolean }) {
+  const [picking, setPicking] = useState(false);
+  if (picking || (!guest && !optional)) {
+    return (
+      <div className="rounded-2xl border border-line bg-white p-4">
+        <GuestPicker
+          onPick={(picked) => {
+            setGuest(picked);
+            setPicking(false);
+          }}
+          onCancel={() => setPicking(false)}
+          optional={optional}
+        />
+      </div>
+    );
+  }
+  return (
+    <div className="flex items-center justify-between gap-3 rounded-2xl bg-cream px-4 py-3">
+      <p className="min-w-0 truncate text-sm">
+        {guest ? (
+          <>
+            Sharing as <strong className="font-semibold">{guest.name}</strong>
+          </>
+        ) : (
+          <span className="text-body">Add your name (optional)</span>
+        )}
+      </p>
+      <button type="button" onClick={() => setPicking(true)} className="shrink-0 text-sm font-semibold text-sage underline underline-offset-4">
+        {guest ? "Change" : "Add name"}
+      </button>
+    </div>
+  );
+}
+
+function GuestPicker({ onPick, onCancel, optional }: { onPick: (guest: Guest) => void; onCancel?: () => void; optional?: boolean }) {
   const [query, setQuery] = useState("");
   const matches = useMemo(() => findGuests(allGuests, query).slice(0, 6), [query]);
   return (
     <div>
       <label htmlFor="guest-search" className="font-serif text-2xl leading-tight">
-        Who are you?
+        {optional ? "Your name" : "Who are you?"}
       </label>
-      <p className="mt-1 text-sm text-soft">Your name goes on the photos you share and on the quest leaderboard.</p>
+      <p className="mt-1 text-sm text-soft">
+        {optional ? "It shows under your photos on the screen." : "Your quests are picked for you, and your name goes on the leaderboard."}
+      </p>
       <input
         id="guest-search"
         type="search"
@@ -127,8 +204,9 @@ interface Item {
   error?: string;
 }
 
-function BulkUpload({ guest }: { guest: Guest | null }) {
+function BulkUpload({ guest, setGuest }: { guest: Guest | null; setGuest: (guest: Guest | null) => void }) {
   const [items, setItems] = useState<Item[]>([]);
+  const [dragging, setDragging] = useState(false);
   const files = useRef(new Map<string, File>());
   const input = useRef<HTMLInputElement>(null);
 
@@ -155,8 +233,9 @@ function BulkUpload({ guest }: { guest: Guest | null }) {
   }
 
   function choose(list: FileList | null) {
-    if (!list?.length) return;
-    const added = [...list].map((file) => {
+    const images = [...(list ?? [])].filter((file) => file.type.startsWith("image/") || /\.(heic|heif)$/i.test(file.name));
+    if (!images.length) return;
+    const added = images.map((file) => {
       const key = crypto.randomUUID();
       files.current.set(key, file);
       return { key, status: "waiting" as const };
@@ -171,8 +250,11 @@ function BulkUpload({ guest }: { guest: Guest | null }) {
 
   return (
     <section className={card} aria-labelledby="share">
-      <h2 id="share" className="font-serif text-3xl leading-tight">Share your photos</h2>
-      <p className="mt-1 text-sm text-soft">Pick as many as you like from your camera roll.</p>
+      <h2 id="share" className="font-serif text-3xl leading-tight">Upload photos</h2>
+      <p className="mt-1 text-sm text-soft">Select as many as you like at once. They go straight to the screen.</p>
+      <div className="mt-4">
+        <SharingAs guest={guest} setGuest={setGuest} optional />
+      </div>
       <input
         ref={input}
         type="file"
@@ -185,11 +267,30 @@ function BulkUpload({ guest }: { guest: Guest | null }) {
           event.target.value = "";
         }}
       />
-      <button type="button" onClick={() => input.current?.click()} className={`${primaryButton} mt-4 w-full`}>
-        <svg aria-hidden className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.6-4.6a2 2 0 012.8 0L16 16m-2-2 1.6-1.6a2 2 0 012.8 0L20 14M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2zm8-12h.01" />
-        </svg>
-        Choose photos
+      <button
+        type="button"
+        onClick={() => input.current?.click()}
+        onDragOver={(event) => {
+          event.preventDefault();
+          setDragging(true);
+        }}
+        onDragLeave={() => setDragging(false)}
+        onDrop={(event) => {
+          event.preventDefault();
+          setDragging(false);
+          choose(event.dataTransfer.files);
+        }}
+        className={`mt-4 flex w-full flex-col items-center justify-center gap-2 rounded-3xl border-2 border-dashed px-5 py-9 text-center transition ${
+          dragging ? "border-sage bg-sage-tint" : "border-sage/40 bg-sage-tint/40 hover:border-sage hover:bg-sage-tint"
+        }`}
+      >
+        <span className="grid h-14 w-14 place-items-center rounded-2xl bg-sage text-cream">
+          <svg aria-hidden className="h-7 w-7" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5M4 15v3a2 2 0 002 2h12a2 2 0 002-2v-3" />
+          </svg>
+        </span>
+        <span className="font-serif text-2xl leading-tight">{items.length ? "Add more photos" : "Choose photos"}</span>
+        <span className="text-sm text-soft">Opens your photo library. Tap every photo you want, then tap Add.</span>
       </button>
 
       {items.length > 0 && (
@@ -249,7 +350,7 @@ function QuestIntro() {
   );
 }
 
-function QuestBoard({ guest }: { guest: Guest }) {
+function QuestBoard({ guest, setGuest }: { guest: Guest; setGuest: (guest: Guest | null) => void }) {
   const quests = useMemo(() => questsFor(guest.id), [guest.id]);
   const [done, setDone] = useState<Record<string, string>>({});
   const [loaded, setLoaded] = useState(false);
@@ -281,6 +382,9 @@ function QuestBoard({ guest }: { guest: Guest }) {
   return (
     <section className={card} aria-labelledby="quests">
       <QuestIntro />
+      <div className="mt-4">
+        <SharingAs guest={guest} setGuest={setGuest} />
+      </div>
       <div className="mt-4 flex items-center gap-3">
         <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-cream">
           <div
@@ -351,7 +455,7 @@ function QuestCard({
         )}
         <div className="min-w-0 flex-1">
           <p className="font-semibold leading-snug">{quest.title}</p>
-          <p className="text-[13px] text-soft">{done ? "Done. Add another if you got a better one." : quest.hint}</p>
+          <p className="text-[13px] text-soft">{done ? "Done. You can add another." : "Not done yet"}</p>
         </div>
       </div>
       <input ref={camera} type="file" accept="image/*" capture="environment" className="sr-only" tabIndex={-1}

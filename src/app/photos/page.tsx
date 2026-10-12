@@ -6,6 +6,7 @@ export const metadata: Metadata = {
   description: "Share your photos from the wedding and play the side quests.",
 };
 
-export default function PhotosPage() {
-  return <PhotoBooth />;
+export default async function PhotosPage({ searchParams }: { searchParams: Promise<{ tab?: string }> }) {
+  const { tab } = await searchParams;
+  return <PhotoBooth initialTab={tab === "quests" ? "quests" : "upload"} />;
 }

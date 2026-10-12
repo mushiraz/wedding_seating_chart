@@ -71,8 +71,8 @@ export default function AdminBoard() {
     <div className="min-h-screen px-4 pb-16 text-ink">
       <header className="max-w-3xl mx-auto flex flex-wrap items-center justify-between gap-3 py-6">
         <div>
-          <p className="text-[11px] font-medium uppercase tracking-[0.32em] text-label">Photo booth admin</p>
-          <h1 className="font-serif text-4xl">Side quests</h1>
+          <p className="text-[11px] font-medium uppercase tracking-[0.32em] text-label">Admin</p>
+          <h1 className="font-serif text-4xl">Photo booth</h1>
         </div>
         <div className="flex items-center gap-2">
           <button type="button" onClick={() => void load()} className={`${pill} border-line bg-white`}>
@@ -92,6 +92,24 @@ export default function AdminBoard() {
       </header>
 
       <div className="max-w-3xl mx-auto">
+        <nav aria-label="Photo booth pages" className="mb-6 grid gap-3 sm:grid-cols-3">
+          {[
+            { href: "/photos/tv", title: "TV screen", detail: "Open on the hall screen, then press Full screen" },
+            { href: "/photos/all", title: "All photos", detail: "The gallery guests see" },
+            { href: "/photos", title: "Guest page", detail: "Upload and side quests" },
+          ].map((link) => (
+            <a
+              key={link.href}
+              href={link.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rounded-2xl border border-line bg-paper px-4 py-3 transition hover:border-sage"
+            >
+              <span className="block font-serif text-xl leading-tight">{link.title} &rarr;</span>
+              <span className="block text-xs text-soft">{link.detail}</span>
+            </a>
+          ))}
+        </nav>
         <div className="mb-5 inline-flex rounded-full border border-line bg-white p-1 text-sm">
           {(["leaderboard", "photos"] as const).map((name) => (
             <button
