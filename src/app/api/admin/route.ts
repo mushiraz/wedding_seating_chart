@@ -25,6 +25,7 @@ export async function GET(request: Request) {
         quest: row.quest_id ? questById(row.quest_id)?.title ?? row.quest_id : null,
         at: row.created_at,
         hidden: row.hidden === 1,
+        kind: row.kind === "video" ? "video" : "image",
       })),
     },
     { headers: { "cache-control": "no-store" } },
@@ -57,7 +58,7 @@ export async function POST(request: Request) {
       // Permanent: the files go first, so a failure leaves a row the admin can retry, never an orphaned image.
       const id = String(body.photoId);
       if (!/^[0-9a-f-]{36}$/.test(id)) return Response.json({ error: "Bad photo id." }, { status: 400 });
-      await env.PHOTOS.delete([objectKey(id, "full"), objectKey(id, "thumb")]);
+      await env.PHOTOS.delete([objectKey(id, "full"), objectKey(id, "thumb"), objectKey(id, "video")]);
       await database.prepare("DELETE FROM photos WHERE id = ?").bind(id).run();
       break;
     }

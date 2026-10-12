@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import type { PublicPhoto } from "@/lib/photoStore";
 import { photoUrl } from "@/lib/uploadPhoto";
+import PlayBadge from "./PlayBadge";
 
 type Filter = "all" | "quests" | "shared";
 
@@ -93,10 +94,11 @@ export default function Gallery() {
                 type="button"
                 onClick={() => setOpen(photo.id)}
                 aria-label={photo.name ? `Open photo shared by ${photo.name}` : "Open photo"}
-                className="block aspect-square w-full overflow-hidden rounded-lg bg-cream"
+                className="relative block aspect-square w-full overflow-hidden rounded-lg bg-cream"
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={photoUrl(photo.id, "thumb")} alt="" loading="lazy" decoding="async" className="h-full w-full object-cover transition hover:scale-[1.03]" />
+                {photo.kind === "video" && <PlayBadge />}
               </button>
             </li>
           ))}
@@ -158,7 +160,8 @@ function Lightbox({
       className="fixed inset-0 z-50 flex flex-col bg-black text-[#f6f1e8]"
       onPointerDown={(event) => (startX.current = event.clientX)}
       onPointerUp={(event) => {
-        if (startX.current === null) return;
+        // Dragging along the video's controls is scrubbing, not swiping to the next item.
+        if (startX.current === null || (event.target as HTMLElement).tagName === "VIDEO") return;
         const dx = event.clientX - startX.current;
         startX.current = null;
         if (dx > 60) onPrev();
@@ -172,14 +175,26 @@ function Lightbox({
         </button>
       </div>
       <div className="relative flex min-h-0 flex-1 items-center justify-center">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          key={photo.id}
-          src={photoUrl(photo.id)}
-          alt={photo.name ? `Photo shared by ${photo.name}` : "Photo shared by a guest"}
-          className="max-h-full max-w-full select-none object-contain animate-crossfade"
-          draggable={false}
-        />
+        {photo.kind === "video" ? (
+          <video
+            key={photo.id}
+            src={photoUrl(photo.id)}
+            poster={photoUrl(photo.id, "thumb")}
+            controls
+            autoPlay
+            playsInline
+            className="h-full w-full object-contain"
+          />
+        ) : (
+          // A plain <img> on purpose: press and hold opens the phone's own save menu.
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            key={photo.id}
+            src={photoUrl(photo.id)}
+            alt={photo.name ? `Photo shared by ${photo.name}` : "Photo shared by a guest"}
+            className="h-full w-full object-contain animate-crossfade"
+          />
+        )}
         <button type="button" onClick={onPrev} aria-label="Previous photo" className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-black/50 p-3 text-2xl leading-none hover:bg-black/70">
           &lsaquo;
         </button>
@@ -187,11 +202,77 @@ function Lightbox({
           &rsaquo;
         </button>
       </div>
-      <div className="px-5 py-4 text-center">
-        {photo.quest && <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#e2c58f]">Side quest · {photo.quest}</p>}
-        <p className="font-serif text-2xl">{photo.name ?? "A guest"}</p>
-        <p className="text-xs text-[#b9ae9a]">{time(photo.at)}</p>
+      <div className="flex items-center justify-between gap-4 px-5 py-4">
+        <div className="min-w-0">
+          {photo.quest && <p className="truncate text-xs font-semibold uppercase tracking-[0.22em] text-[#e2c58f]">Side quest · {photo.quest}</p>}
+          <p className="truncate font-serif text-2xl">{photo.name ?? "A guest"}</p>
+          <p className="text-xs text-[#b9ae9a]">
+            {time(photo.at)}
+            {photo.kind === "image" && " · press and hold the photo to save it"}
+          </p>
+        </div>
+        <SaveButton photo={photo} />
       </div>
     </div>
+  );
+}
+
+/**
+ * Opens the phone's share sheet (Save Image / Save Video on iPhone) when it can
+ * take files, and downloads the file anywhere else. Photos are fetched as soon
+ * as they open, because iPhones only allow the share sheet right after a tap.
+ */
+function SaveButton({ photo }: { photo: PublicPhoto }) {
+  const [file, setFile] = useState<File | null>(null);
+  const [saving, setSaving] = useState(false);
+  const name = `ahad-rehnuba-${photo.id.slice(0, 8)}`;
+
+  useEffect(() => {
+    if (photo.kind !== "image") return;
+    let active = true;
+    fetch(photoUrl(photo.id))
+      .then((response) => response.blob())
+      .then((blob) => active && setFile(new File([blob], `${name}.jpg`, { type: "image/jpeg" })))
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, [photo.id, photo.kind, name]);
+
+  async function save() {
+    if (file && navigator.canShare?.({ files: [file] })) {
+      try {
+        await navigator.share({ files: [file] });
+        return;
+      } catch (error) {
+        if ((error as Error).name === "AbortError") return;
+      }
+    }
+    setSaving(true);
+    try {
+      const blob = file ?? (await (await fetch(photoUrl(photo.id))).blob());
+      const ext = photo.kind === "image" ? "jpg" : /quicktime/.test(blob.type) ? "mov" : /webm/.test(blob.type) ? "webm" : "mp4";
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `${name}.${ext}`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 30000);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={() => void save()}
+      disabled={saving}
+      className="shrink-0 rounded-full bg-[#f6f1e8] px-5 py-2.5 text-sm font-semibold text-[#1c2b24] hover:bg-white disabled:opacity-60"
+    >
+      {saving ? "Saving…" : "Save"}
+    </button>
   );
 }

@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { QUESTS_TO_WIN, questById } from "@/lib/quests";
 import { photoUrl } from "@/lib/uploadPhoto";
+import PlayBadge from "./PlayBadge";
 
 interface Standing {
   guestId: string;
@@ -20,6 +21,7 @@ interface AdminPhoto {
   quest: string | null;
   at: number;
   hidden: boolean;
+  kind: "image" | "video";
 }
 
 interface Board {
@@ -272,13 +274,14 @@ function PhotoTile({ photo, act }: { photo: AdminPhoto; act: (body: object) => P
   const [busy, setBusy] = useState(false);
   return (
     <li className={`overflow-hidden rounded-xl border bg-white ${photo.hidden ? "border-[#d8b4ac]" : "border-line"}`}>
-      <a href={photoUrl(photo.id)} target="_blank" rel="noopener noreferrer" className="block aspect-square bg-cream">
+      <a href={photoUrl(photo.id)} target="_blank" rel="noopener noreferrer" className="relative block aspect-square bg-cream">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={photoUrl(photo.id, "thumb")} alt="" loading="lazy" className={`h-full w-full object-cover ${photo.hidden ? "opacity-40" : ""}`} />
+        {photo.kind === "video" && <PlayBadge />}
       </a>
       <div className="p-2.5 text-xs">
         <p className="truncate font-semibold">{photo.name ?? "Anonymous"}</p>
-        <p className="truncate text-soft">{photo.questId ? questById(photo.questId)?.title ?? photo.quest : "Shared photo"}</p>
+        <p className="truncate text-soft">{photo.questId ? questById(photo.questId)?.title ?? photo.quest : photo.kind === "video" ? "Video" : "Shared photo"}</p>
         <p className="text-soft tabular-nums">{time(photo.at)}</p>
         <div className="mt-2 grid grid-cols-2 gap-1.5">
           <button

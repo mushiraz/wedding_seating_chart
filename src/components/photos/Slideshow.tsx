@@ -394,8 +394,13 @@ function ScrollStrip({
     <div ref={track} className="absolute inset-y-0 left-0 flex will-change-transform" style={{ gap }}>
       {items.map(({ photo, key, w }) => (
         <figure key={key} className="relative h-full shrink-0" style={{ width: w }}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={photoUrl(photo.id)} alt={photo.name ? `Photo shared by ${photo.name}` : "Photo shared by a guest"} className="h-full w-full object-cover" decoding="async" />
+          {photo.kind === "video" ? (
+            // object-contain: if a phone could not read the video's size, a wrong guess shows black bars, not a crop.
+            <video src={photoUrl(photo.id)} poster={photoUrl(photo.id, "thumb")} muted autoPlay loop playsInline className="h-full w-full bg-black object-contain" />
+          ) : (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={photoUrl(photo.id)} alt={photo.name ? `Photo shared by ${photo.name}` : "Photo shared by a guest"} className="h-full w-full object-cover" decoding="async" />
+          )}
           {captions && (photo.name || photo.quest) && <Caption photo={photo} small />}
         </figure>
       ))}
@@ -421,6 +426,8 @@ function SingleView({
   const current = order.find((photo) => photo.id === pair.current) ?? order[0];
   const previous = order.find((photo) => photo.id === pair.previous) ?? null;
   const index = order.indexOf(current);
+  // A video plays through (at least the normal photo time, at most a minute) before moving on.
+  const hold = current.kind === "video" ? Math.min(Math.max(current.duration ?? seconds, seconds), 60) : seconds;
 
   const go = (target: PublicPhoto) => setPair((prev) => (prev.current === target.id ? prev : { previous: current.id, current: target.id }));
 
@@ -430,17 +437,17 @@ function SingleView({
     const timer = setTimeout(async () => {
       const next = order[(index + 1) % order.length];
       try {
-        await preload(photoUrl(next.id));
+        await preload(photoUrl(next.id, next.kind === "video" ? "thumb" : "full"));
       } catch {
         // Unreachable photo: move on anyway; the next tick tries the one after.
       }
       if (active) setPair({ previous: current.id, current: next.id });
-    }, seconds * 1000);
+    }, hold * 1000);
     return () => {
       active = false;
       clearTimeout(timer);
     };
-  }, [order, index, current.id, seconds, paused]);
+  }, [order, index, current.id, hold, paused]);
 
   useEffect(() => {
     controlRef.current = {
@@ -462,12 +469,16 @@ function Frame({ photo, entering = false }: { photo: PublicPhoto; entering?: boo
   return (
     <div className={`absolute inset-0 bg-black ${entering ? "animate-crossfade" : ""}`}>
       {/* object-contain inside a full-screen box: the whole photo, centered, black bars on the spare sides. */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={photoUrl(photo.id)}
-        alt={photo.name ? `Photo shared by ${photo.name}` : "Photo shared by a guest"}
-        className="h-full w-full object-contain"
-      />
+      {photo.kind === "video" ? (
+        <video src={photoUrl(photo.id)} poster={photoUrl(photo.id, "thumb")} muted autoPlay playsInline className="h-full w-full object-contain" />
+      ) : (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={photoUrl(photo.id)}
+          alt={photo.name ? `Photo shared by ${photo.name}` : "Photo shared by a guest"}
+          className="h-full w-full object-contain"
+        />
+      )}
     </div>
   );
 }

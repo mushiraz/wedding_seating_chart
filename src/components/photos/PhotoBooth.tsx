@@ -6,7 +6,8 @@ import type { Guest } from "@/lib/types";
 import type { PublicPhoto } from "@/lib/photoStore";
 import { findGuests } from "@/lib/tableDisplay";
 import { QUESTS_PER_GUEST, QUESTS_TO_WIN, questsFor, type Quest } from "@/lib/quests";
-import { photoUrl, uploadPhoto } from "@/lib/uploadPhoto";
+import { isVideoFile, photoUrl, uploadMedia } from "@/lib/uploadPhoto";
+import PlayBadge from "./PlayBadge";
 import { allGuests, useGuest } from "./useGuest";
 
 const card =
@@ -232,6 +233,9 @@ interface Item {
   status: "waiting" | "uploading" | "done" | "error";
   id?: string;
   error?: string;
+  /** 0 to 1 while sending. */
+  progress?: number;
+  video?: boolean;
 }
 
 function BulkUpload() {
@@ -252,7 +256,7 @@ function BulkUpload() {
         patch(key, { status: "uploading", error: undefined });
         try {
           // Uploads are anonymous; names are only for quests, so the couple knows who won.
-          const id = await uploadPhoto(files.current.get(key)!, {});
+          const id = await uploadMedia(files.current.get(key)!, {}, (progress) => patch(key, { progress }));
           files.current.delete(key);
           patch(key, { status: "done", id });
         } catch (error) {
@@ -264,12 +268,13 @@ function BulkUpload() {
   }
 
   function choose(list: FileList | null) {
-    const images = [...(list ?? [])].filter((file) => file.type.startsWith("image/") || /\.(heic|heif)$/i.test(file.name));
-    if (!images.length) return;
-    const added = images.map((file) => {
+    // No filtering here: whatever the phone hands over gets a try, and each file reports its own problem.
+    const picked = [...(list ?? [])];
+    if (!picked.length) return;
+    const added = picked.map((file) => {
       const key = crypto.randomUUID();
       files.current.set(key, file);
-      return { key, status: "waiting" as const };
+      return { key, status: "waiting" as const, video: isVideoFile(file) };
     });
     setItems((current) => [...current, ...added]);
     void run(added.map((item) => item.key));
@@ -281,12 +286,12 @@ function BulkUpload() {
 
   return (
     <section className={card} aria-labelledby="share">
-      <h2 id="share" className="font-serif text-3xl leading-tight">Upload photos</h2>
-      <p className="mt-1 text-sm text-soft">Select as many as you like at once. They go straight to the screen.</p>
+      <h2 id="share" className="font-serif text-3xl leading-tight">Upload photos &amp; videos</h2>
+      <p className="mt-1 text-sm text-soft">Select as many as you like at once, up to 50 MB each. They go straight to the screen.</p>
       <input
         ref={input}
         type="file"
-        accept="image/*"
+        accept="image/*,video/*,.heic,.heif"
         multiple
         className="sr-only"
         tabIndex={-1}
@@ -317,8 +322,8 @@ function BulkUpload() {
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5M4 15v3a2 2 0 002 2h12a2 2 0 002-2v-3" />
           </svg>
         </span>
-        <span className="font-serif text-2xl leading-tight">{items.length ? "Add more photos" : "Choose photos"}</span>
-        <span className="text-sm text-soft">Opens your photo library. Tap every photo you want, then tap Add.</span>
+        <span className="font-serif text-2xl leading-tight">{items.length ? "Add more" : "Choose photos & videos"}</span>
+        <span className="text-sm text-soft">Opens your photo library. Tap everything you want, then tap Add.</span>
       </button>
 
       {items.length > 0 && (
@@ -340,21 +345,26 @@ function BulkUpload() {
           <div className="mt-2 h-2 overflow-hidden rounded-full bg-cream">
             <div
               className="h-full rounded-full bg-sage transition-[width] duration-300"
-              style={{ width: `${(100 * (done.length + failed.length)) / items.length}%` }}
+              style={{
+                width: `${(100 * items.reduce((sum, item) => sum + (item.status === "done" || item.status === "error" ? 1 : item.progress ?? 0), 0)) / items.length}%`,
+              }}
             />
           </div>
           {failed[0]?.error && !busy && <p className="mt-2 text-sm text-[#9a3b2e]">{failed[0].error}</p>}
           <ul className="mt-3 grid grid-cols-4 gap-1.5">
             {items.map((item) => (
-              <li key={item.key} className="aspect-square overflow-hidden rounded-lg bg-cream">
+              <li key={item.key} className="relative aspect-square overflow-hidden rounded-lg bg-cream">
                 {item.id ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={photoUrl(item.id, "thumb")} alt="" className="h-full w-full object-cover" />
+                  <>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={photoUrl(item.id, "thumb")} alt="" className="h-full w-full object-cover" />
+                    {item.video && <PlayBadge />}
+                  </>
                 ) : (
                   <span
                     className={`grid h-full place-items-center text-xs ${item.status === "error" ? "text-[#9a3b2e]" : "text-label"}`}
                   >
-                    {item.status === "error" ? "Failed" : item.status === "uploading" ? "…" : ""}
+                    {item.status === "error" ? "Failed" : item.status === "uploading" ? (item.progress ? `${Math.round(item.progress * 100)}%` : "…") : ""}
                   </span>
                 )}
               </li>
@@ -461,7 +471,7 @@ function QuestCard({
     if (!file) return;
     setState({ busy: true });
     try {
-      await uploadPhoto(file, { guestId: guest.id, questId: quest.id });
+      await uploadMedia(file, { guestId: guest.id, questId: quest.id });
       await onDone();
       setState({ busy: false });
     } catch (error) {
@@ -488,7 +498,7 @@ function QuestCard({
       </div>
       <input ref={camera} type="file" accept="image/*" capture="environment" className="sr-only" tabIndex={-1}
         onChange={(event) => { void submit(event.target.files); event.target.value = ""; }} />
-      <input ref={gallery} type="file" accept="image/*" className="sr-only" tabIndex={-1}
+      <input ref={gallery} type="file" accept="image/*,.heic,.heif" className="sr-only" tabIndex={-1}
         onChange={(event) => { void submit(event.target.files); event.target.value = ""; }} />
       <div className="mt-3 grid grid-cols-2 gap-2">
         <button type="button" disabled={state.busy} onClick={() => camera.current?.click()} className={secondaryButton}>

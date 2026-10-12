@@ -2,6 +2,8 @@ import { env } from "cloudflare:workers";
 import seating from "@/data/ahad-rehnuba.json";
 import { questById, questsFor, rankPlayers, type QuestPhoto } from "./quests";
 
+export { MAX_UPLOAD_BYTES } from "./limits";
+
 export interface PhotoRow {
   id: string;
   guest_id: string | null;
@@ -10,6 +12,8 @@ export interface PhotoRow {
   height: number;
   created_at: number;
   hidden: number;
+  kind: "image" | "video";
+  duration: number | null;
 }
 
 /** What the guest pages and the TV get: no hidden photos, names resolved. */
@@ -18,6 +22,9 @@ export interface PublicPhoto {
   name: string | null;
   questId: string | null;
   quest: string | null;
+  kind: "image" | "video";
+  /** Seconds, videos only. */
+  duration: number | null;
   width: number;
   height: number;
   at: number;
@@ -45,7 +52,9 @@ export function db(): D1Database {
       width INTEGER NOT NULL,
       height INTEGER NOT NULL,
       created_at INTEGER NOT NULL,
-      hidden INTEGER NOT NULL DEFAULT 0
+      hidden INTEGER NOT NULL DEFAULT 0,
+      kind TEXT NOT NULL DEFAULT 'image',
+      duration REAL
     )`),
     env.DB.prepare("CREATE INDEX IF NOT EXISTS photos_by_time ON photos (created_at)"),
     env.DB.prepare("CREATE INDEX IF NOT EXISTS photos_by_guest ON photos (guest_id, quest_id)"),
@@ -54,11 +63,32 @@ export function db(): D1Database {
       created_at INTEGER NOT NULL
     )`),
     env.DB.prepare("CREATE TABLE IF NOT EXISTS failed_logins (ip TEXT NOT NULL, at INTEGER NOT NULL)"),
-  ]).catch((error) => {
-    schema = null;
-    throw error;
-  });
+  ])
+    .then(addMissingColumns)
+    .catch((error) => {
+      schema = null;
+      throw error;
+    });
   return env.DB;
+}
+
+/** Tables made before videos were allowed get the new columns; existing rows count as images. */
+async function addMissingColumns() {
+  const { results } = await env.DB.prepare("PRAGMA table_info(photos)").all<{ name: string }>();
+  const have = new Set(results.map((column) => column.name));
+  const wanted = [
+    ["kind", "ALTER TABLE photos ADD COLUMN kind TEXT NOT NULL DEFAULT 'image'"],
+    ["duration", "ALTER TABLE photos ADD COLUMN duration REAL"],
+  ];
+  for (const [column, sql] of wanted) {
+    if (have.has(column)) continue;
+    try {
+      await env.DB.prepare(sql).run();
+    } catch (error) {
+      // Another request added it a moment ago.
+      if (!/duplicate column/i.test(String(error))) throw error;
+    }
+  }
 }
 
 export async function ready(): Promise<D1Database> {
@@ -73,13 +103,16 @@ export function toPublic(row: PhotoRow): PublicPhoto {
     name: guestName(row.guest_id),
     questId: row.quest_id,
     quest: row.quest_id ? questById(row.quest_id)?.title ?? null : null,
+    kind: row.kind === "video" ? "video" : "image",
+    duration: row.duration,
     width: row.width,
     height: row.height,
     at: row.created_at,
   };
 }
 
-export const objectKey = (id: string, size: "full" | "thumb") => `${size}/${id}.jpg`;
+/** Images are stored as full + thumb JPEGs; videos as the original file plus a JPEG poster in thumb/. */
+export const objectKey = (id: string, size: "full" | "thumb" | "video") => (size === "video" ? `video/${id}` : `${size}/${id}.jpg`);
 
 export async function questProgress(guestId: string) {
   const database = await ready();
