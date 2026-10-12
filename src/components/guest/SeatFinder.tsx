@@ -81,7 +81,7 @@ export default function SeatFinder({ data }: { data: EventData }) {
         <div aria-live="polite">
           {query.trim() && matches.length === 0 && (
             <p className="mt-4 rounded-2xl bg-cream px-4 py-3 text-sm text-body">
-              No one matches &ldquo;{query.trim()}&rdquo;. Try just your first or last name. Still nothing? Ask anyone from either family and they will walk you to your seat.
+              We could not find &ldquo;{query.trim()}&rdquo;. Try just your first or last name, or ask anyone from either family. They will gladly help you to your seat.
             </p>
           )}
           {matches.length > 0 && (
@@ -100,7 +100,7 @@ export default function SeatFinder({ data }: { data: EventData }) {
                       <span className="flex-1 min-w-0">
                         <span className="block truncate font-medium text-ink">{guest.name}</span>
                         <span className="block text-[13px] text-soft">
-                          {table ? tableTitle(table) : "Table to be confirmed at the door"}
+                          {table ? tableTitle(table) : "Please ask a family member for your table"}
                         </span>
                       </span>
                       {table && (

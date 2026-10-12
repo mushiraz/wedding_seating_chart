@@ -208,7 +208,7 @@ function GuestPicker({ onPick, onCancel }: { onPick: (guest: Guest) => void; onC
       />
       {query.trim() && (
         <ul className="mt-3 divide-y divide-line overflow-hidden rounded-2xl border border-line bg-white" aria-live="polite">
-          {matches.length === 0 && <li className="px-4 py-3 text-sm text-soft">No one by that name. Try your first or last name.</li>}
+          {matches.length === 0 && <li className="px-4 py-3 text-sm text-soft">We could not find that name. Try just your first or last name.</li>}
           {matches.map((guest) => (
             <li key={guest.id}>
               <button type="button" onClick={() => onPick(guest)} className="w-full px-4 py-3 text-left font-medium hover:bg-cream/70">

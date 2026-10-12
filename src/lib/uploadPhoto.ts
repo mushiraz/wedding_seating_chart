@@ -44,7 +44,7 @@ export async function uploadPhoto(file: File, extra: { guestId?: string | null; 
   try {
     source = await decode(file);
   } catch {
-    throw new Error("This photo format can't be opened here. Try a different photo.");
+    throw new Error("This photo could not be opened. Please try a different one.");
   }
   const full = await render(source, FULL_EDGE, 0.85);
   const thumb = await render(source, THUMB_EDGE, 0.75);
@@ -60,7 +60,7 @@ export async function uploadPhoto(file: File, extra: { guestId?: string | null; 
 
   const response = await fetch("/api/photos", { method: "POST", body: form });
   const body = (await response.json().catch(() => ({}))) as { id?: string; error?: string };
-  if (!response.ok || !body.id) throw new Error(body.error ?? "Upload failed. Check your signal and try again.");
+  if (!response.ok || !body.id) throw new Error(body.error ?? "That photo did not go through. Please check your connection and try again.");
   return body.id;
 }
 

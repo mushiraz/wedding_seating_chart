@@ -12,30 +12,30 @@ export const weddingDay = {
       time: "2:30 pm",
       title: "Arrive and take your seat",
       detail:
-        "The ceremony is outdoors. Please be here between 2:30 and 2:55 so everyone is seated before it begins.",
+        "The ceremony is outdoors. Guests are welcome from 2:30, and we hope to have everyone seated by 2:55.",
     },
     {
       time: "3:00 pm",
       title: "Nikkah",
       detail:
-        "The ceremony starts at 3:00. If you arrive after that, you will be seated at the next pause.",
+        "The ceremony begins at 3:00. If you arrive after it has started, please come in quietly and find your seat.",
     },
     {
       time: "After the nikkah",
       title: "Photographs, then indoors",
       detail:
-        "The party moves inside for photographs and the reception. There is no separate call time for this.",
+        "The couple takes photographs, and everyone moves indoors for the reception.",
     },
     {
       time: "5:30 pm",
       title: "Walima",
       detail:
-        "The reception begins at 5:30, indoors. If you are joining only for the reception, arrive at 5:30 and no later than 6:00.",
+        "The reception begins at 5:30, indoors. If you are joining us for the reception only, please aim to arrive between 5:30 and 6:00.",
     },
     {
       time: "11:00 pm",
       title: "The evening ends",
-      detail: "The celebration at the venue runs through 11:00.",
+      detail: "The celebration continues until 11:00. Stay as long as you like.",
     },
   ],
   parents: [
@@ -71,20 +71,20 @@ export const weddingDay = {
     {
       title: "What to wear",
       detail:
-        "Semi-formal, or South Asian attire. The ceremony is outdoors and the reception is warm indoors, so bring a layer.",
+        "Semi-formal or South Asian attire. The ceremony is outdoors, so you may want a light layer.",
     },
     {
-      title: "If you are late",
-      detail: "Late arrivals are seated later, once there is a pause in the ceremony.",
+      title: "Arriving late",
+      detail: "That is perfectly fine. Please come in quietly and find your seat. Your table is listed at the top of this page.",
     },
     {
       title: "Gifts",
-      detail: "Please, no boxed gifts. Your being here is the gift.",
+      detail: "Your presence is the greatest gift. If you would like to give something, we kindly ask for no boxed gifts.",
     },
     {
       title: "If your name is missing",
       detail:
-        "Search with just your first name, then just your last name. If you still do not appear, ask anyone from either family.",
+        "Try searching just your first name or just your last name. If you still cannot find it, anyone from either family will gladly help you to your seat.",
     },
   ],
 } as const;

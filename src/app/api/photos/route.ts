@@ -51,8 +51,8 @@ export async function POST(request: Request) {
   if (guestId && !isGuest(guestId)) return bad("Unknown guest.");
   const questId = (form.get("questId") as string | null) || null;
   if (questId) {
-    if (!guestId) return bad("Pick your name before doing a quest.");
-    if (!questsFor(guestId).some((quest) => quest.id === questId)) return bad("That quest is not on your list.");
+    if (!guestId) return bad("Please choose your name first.");
+    if (!questsFor(guestId).some((quest) => quest.id === questId)) return bad("This challenge is not on your list.");
   }
 
   const id = crypto.randomUUID();
