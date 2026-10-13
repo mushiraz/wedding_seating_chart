@@ -16,12 +16,14 @@ export default function Gallery() {
   const [photos, setPhotos] = useState<PublicPhoto[] | null>(null);
   const [filter, setFilter] = useState<Filter>("all");
   const [open, setOpen] = useState<string | null>(null);
+  const [locked, setLocked] = useState(false);
 
   useEffect(() => {
     let active = true;
     const load = async () => {
       try {
         const response = await fetch("/api/photos", { cache: "no-store" });
+        if (response.status === 401 && active) setLocked(true);
         if (response.ok && active) setPhotos(((await response.json()) as { photos: PublicPhoto[] }).photos);
       } catch {
         // Try again on the next tick.
@@ -34,6 +36,8 @@ export default function Gallery() {
       clearInterval(timer);
     };
   }, []);
+
+  if (locked) return <AdminOnly />;
 
   const shown = (photos ?? []).filter((photo) => (filter === "quests" ? photo.questId : filter === "shared" ? !photo.questId : true));
   const index = shown.findIndex((photo) => photo.id === open);
@@ -274,5 +278,20 @@ function SaveButton({ photo }: { photo: PublicPhoto }) {
     >
       {saving ? "Saving…" : "Save"}
     </button>
+  );
+}
+
+/** Guests never see each other's uploads; this page is for the couple's admin. */
+export function AdminOnly({ dark = false }: { dark?: boolean }) {
+  return (
+    <div className={`grid min-h-screen place-items-center px-6 text-center ${dark ? "bg-black text-[#f6f1e8]" : "text-ink"}`}>
+      <div>
+        <p className="font-serif text-3xl">Admin only</p>
+        <p className={`mt-2 text-sm ${dark ? "text-[#d9cfbd]" : "text-soft"}`}>Sign in on the admin page, then come back to this page.</p>
+        <Link href="/photos/admin" className="mt-5 inline-block rounded-full bg-sage px-5 py-2.5 text-sm font-semibold text-cream">
+          Go to admin sign-in
+        </Link>
+      </div>
+    </div>
   );
 }

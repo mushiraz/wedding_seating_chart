@@ -97,7 +97,7 @@ export default function AdminBoard() {
         <nav aria-label="Photo booth pages" className="mb-6 grid gap-3 sm:grid-cols-3">
           {[
             { href: "/photos/tv", title: "TV screen", detail: "Open on the hall screen, then press Full screen" },
-            { href: "/photos/all", title: "All photos", detail: "The gallery guests see" },
+            { href: "/photos/all", title: "All photos", detail: "Every upload, for you only" },
             { href: "/photos", title: "Guest page", detail: "Upload and side quests" },
           ].map((link) => (
             <a

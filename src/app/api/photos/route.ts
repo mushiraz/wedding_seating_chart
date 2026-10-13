@@ -1,5 +1,5 @@
 import { env } from "cloudflare:workers";
-import { isGuest, objectKey, ready, toPublic, type PhotoRow } from "@/lib/photoStore";
+import { isAdmin, isGuest, objectKey, ready, toPublic, type PhotoRow } from "@/lib/photoStore";
 import { questsFor } from "@/lib/quests";
 
 export const dynamic = "force-dynamic";
@@ -11,8 +11,9 @@ const MAX_CONVERT_BYTES = 20 * 1024 * 1024;
 const FULL_EDGE = 2048;
 const THUMB_EDGE = 480;
 
-/** Everything visible, newest first. The TV, the gallery and the photo page poll this. */
-export async function GET() {
+/** Everything visible, newest first. Admin only: guests never see each other's uploads; the TV and gallery sign in. */
+export async function GET(request: Request) {
+  if (!(await isAdmin(request))) return Response.json({ error: "Sign in on the admin page first." }, { status: 401 });
   const database = await ready();
   // ponytail: one list for the whole night; page it if a wedding ever passes a few thousand uploads
   const { results } = await database

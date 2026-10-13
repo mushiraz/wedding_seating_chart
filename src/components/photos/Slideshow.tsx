@@ -6,6 +6,7 @@ import type { PublicPhoto } from "@/lib/photoStore";
 import { QUESTS } from "@/lib/quests";
 import { DEFAULT_TV, PACE, fromCutoff, matchesTv, tvQuery, type TvSettings } from "@/lib/tvSettings";
 import { photoUrl } from "@/lib/uploadPhoto";
+import { AdminOnly } from "./Gallery";
 
 const POLL_MS = 10000;
 const UPLOAD_URL = "https://ahadandrehnuba.com/photos";
@@ -45,6 +46,7 @@ export default function Slideshow({ initial = DEFAULT_TV }: { initial?: TvSettin
   const [panel, setPanel] = useState(false);
   const [paused, setPaused] = useState(false);
   const [fullscreen, setFullscreen] = useState(false);
+  const [locked, setLocked] = useState(false);
   const control = useRef<Control>({ next: () => {}, prev: () => {} });
 
   useEffect(() => {
@@ -52,6 +54,10 @@ export default function Slideshow({ initial = DEFAULT_TV }: { initial?: TvSettin
     async function poll() {
       try {
         const response = await fetch("/api/photos", { cache: "no-store" });
+        if (response.status === 401) {
+          if (active) setLocked(true);
+          return;
+        }
         if (!response.ok) return;
         const { photos: list } = (await response.json()) as { photos: PublicPhoto[] };
         if (active) setPhotos({ list, at: Date.now() });
@@ -134,6 +140,7 @@ export default function Slideshow({ initial = DEFAULT_TV }: { initial?: TvSettin
     [photos],
   );
   const showChrome = !idle || panel;
+  if (locked) return <AdminOnly dark />;
 
   return (
     <div className={`fixed inset-0 overflow-hidden bg-black text-[#f6f1e8] ${showChrome ? "" : "cursor-none"}`}>
